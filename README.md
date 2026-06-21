@@ -1,4 +1,6 @@
 # Lenzon
+Visit [Explainer] (https://www.lenzon.ai/viewer/cmqo9zi2z0000o9zdphhvuq3c?voice=google-chirp3) 
+to see a real walk-through!
 
 Lenzon turns a GitHub repository or pull request into a **narrated, animated
 codebase explainer**; a short, scene-by-scene presentation that walks through
