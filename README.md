@@ -1,7 +1,7 @@
 # Lenzon
-Visit [Explainer] (https://www.lenzon.ai/viewer/cmqo9zi2z0000o9zdphhvuq3c?voice=google-chirp3) 
+Visit our (https://www.lenzon.ai/viewer/cmqo9zi2z0000o9zdphhvuq3c?voice=google-chirp3 "Walk-through").
 to see a real walk-through!
-
+Check out [Google](https://google.com "Google Search Engine").
 Lenzon turns a GitHub repository or pull request into a **narrated, animated
 codebase explainer**; a short, scene-by-scene presentation that walks through
 what a codebase (or a PR) does and why. An agent analyzes the code and writes a
