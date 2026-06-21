@@ -7,17 +7,17 @@ structured analysis and another creates a structured spcript; a browser-based
 player renders that script into animated scenes with synchronized narration.
 You keep up with yours and everyone elses code with visual and auditory explainers.
 
-This repository is the **open source** of Lenzon: the player and template
-engine, the shared type contracts, an example server with the Studio authoring
-UI, the VS Code extension, and the architecture/infrastructure references. It's
-the set of building blocks you can read, run, extend, and contribute to.
-
 We know that some teams will want to build out their own full agentic pipeline 
 so we've tried to eplain that as best we can while protecting our own infrastructure.
 A great starter option is to use ours which handles public and private repos,
 guarantees privacy and scales on AWS cloud infrastructure. You can use our new
 VSCode Extension or implement our GitHub App - open a usage based account at 
 https://Lenzon.ai
+
+This repository is the **open source** of Lenzon: the player and template
+engine, the shared type contracts, an example server with the Studio authoring
+UI, the VS Code extension, and the architecture/infrastructure references. It's
+the set of building blocks you can read, run, extend, and contribute to.
 
 ## How it fits together
 
