@@ -1,0 +1,106 @@
+{
+  "name": "lenzon-explain-pr",
+  "displayName": "Lenzon — Explain this PR",
+  "description": "Watch a Lenzon explainer for a PR without leaving VS Code.",
+  "version": "0.0.1",
+  "private": true,
+  "publisher": "lenzon",
+  "license": "UNLICENSED",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/horizontwo/Lenzon.git",
+    "directory": "apps/vscode-extension"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "lenzon",
+          "title": "Lenzon",
+          "icon": "icon-activitybar.svg"
+        }
+      ]
+    },
+    "views": {
+      "lenzon": [
+        {
+          "id": "lenzon.sidebar",
+          "name": "Explain PRs",
+          "type": "webview"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "lenzon.explainPr",
+        "title": "Lenzon: Explain this PR"
+      },
+      {
+        "command": "lenzon.signIn",
+        "title": "Lenzon: Sign in"
+      },
+      {
+        "command": "lenzon.signOut",
+        "title": "Lenzon: Sign out"
+      },
+      {
+        "command": "lenzon.testHarness",
+        "title": "Lenzon: Test Harness (dev)"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "lenzon.testHarness",
+          "when": "config.lenzon.devMode"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Lenzon",
+      "properties": {
+        "lenzon.apiBaseUrl": {
+          "type": "string",
+          "default": "https://www.lenzon.ai",
+          "markdownDescription": "Base URL of the Lenzon service the `player-link` contract is called against. Use `http://localhost:3001` for a local server. (Use `www.lenzon.ai` — the non-www host redirects and can strip auth headers.)"
+        },
+        "lenzon.apiToken": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "**Legacy / dev override.** A Lenzon API key sent as the Bearer token on the `player-link` call. The supported path is now **Lenzon: Sign in** (device flow), which stores the token securely in VS Code SecretStorage — that takes precedence over this setting. Leave blank unless you're testing with a manually-minted key. Treat as a secret."
+        },
+        "lenzon.devPrNumber": {
+          "type": "number",
+          "default": 0,
+          "markdownDescription": "Optional explicit PR override: request this PR number for the detected repo regardless of the checked-out branch (handy for testing a specific PR). `0` means unset — resolve the PR from the current branch."
+        },
+        "lenzon.devMode": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Show developer-only commands (e.g. **Lenzon: Test Harness (dev)**) in the Command Palette. Off by default."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "typecheck": "tsc -p ./ --noEmit",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.2.0",
+    "typescript": "^5.4.0"
+  }
+}

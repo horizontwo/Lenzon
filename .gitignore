@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+.next/
+out/
+*.tsbuildinfo
+
+# Env / secrets — never commit
+.env
+.env.*
+!.env.example
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Vercel
+.vercel
+
+# Sourcemaps (build at publish time)
+*.map
+
+# Media artifacts
+*.mp4

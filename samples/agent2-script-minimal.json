@@ -1,0 +1,131 @@
+{
+  "_comment": "MINIMAL teaching sample. A small PresentationScript (the Agent 2 / Producer output) for the fictional 'leaflet-cli' described in agent1-analysis-minimal.json. RUNNABLE: every primitive.template here is a template that actually ships in the player registry (apps/player/src/templates/index.ts), so this renders cleanly. Conforms to PresentationScript in @lenzon/shared-types (packages/shared-types/src/script.ts). Contrast with agent2-script-invoicely.json, which is UNCONSTRAINED design-fiction and uses templates that do not exist.",
+  "meta": {
+    "title": "Leaflet CLI — What It Does",
+    "repoUrl": "https://github.com/example/leaflet-cli",
+    "generatedAt": "2026-06-21T12:00:00Z",
+    "persona": "friendly",
+    "estimatedDuration": 42
+  },
+  "defaults": {
+    "palette": {
+      "primary": "#3b82f6",
+      "secondary": "#a855f7",
+      "accent": "#f59e0b",
+      "background": "#0f172a",
+      "text": "#f8fafc",
+      "code": "#94a3b8"
+    },
+    "transition": { "type": "fade", "durationMs": 500 },
+    "voice": { "provider": "stub", "voiceId": "narrator", "speed": 1.0 }
+  },
+  "scenes": [
+    {
+      "id": "s01-title",
+      "section": "quickFacts",
+      "primitive": {
+        "template": "title-card",
+        "content": {
+          "org": "example",
+          "repo": "leaflet-cli",
+          "blurb": "A tiny command-line tool that turns a folder of Markdown notes into a static HTML site.",
+          "kicker": "Codebase analysis",
+          "eyebrow": "§ 00 / title-card",
+          "analysisDate": "2026-06-21",
+          "commit": "c0ffee1",
+          "branch": "main",
+          "brand": "Lenzon"
+        }
+      },
+      "narration": "This is Leaflet CLI. Point it at a folder of Markdown notes and it gives you back a small website. Let's see how it works.",
+      "holdSeconds": 6,
+      "transition": { "type": "fade", "durationMs": 500 },
+      "beats": [
+        { "at": 2, "action": { "type": "emphasize", "target": "repo" } }
+      ]
+    },
+    {
+      "id": "s02-flow",
+      "section": "architecture",
+      "primitive": {
+        "template": "flow-diagram",
+        "content": {
+          "nodes": [
+            { "id": "cli", "label": "CLI (argv)", "group": "entry" },
+            { "id": "scan", "label": "Scanner", "group": "core" },
+            { "id": "render", "label": "Renderer", "group": "core" },
+            { "id": "dist", "label": "./dist (HTML)", "group": "output" }
+          ],
+          "edges": [
+            { "from": "cli", "to": "scan", "label": "find files" },
+            { "from": "scan", "to": "render", "label": "*.md" },
+            { "from": "render", "to": "dist", "label": "write HTML" }
+          ],
+          "groups": [
+            { "id": "entry", "label": "Entry", "color": "palette.primary" },
+            { "id": "core", "label": "Core", "color": "palette.secondary" },
+            { "id": "output", "label": "Output", "color": "palette.accent" }
+          ],
+          "staggerMs": 300,
+          "layout": "left-to-right"
+        }
+      },
+      "narration": "It's a straight pipeline. The CLI parses your arguments, the scanner finds every Markdown file, the renderer converts each one to HTML, and the result lands in a dist folder.",
+      "holdSeconds": 10,
+      "transition": { "type": "slide-left", "durationMs": 500 },
+      "beats": [
+        { "at": 3, "action": { "type": "emphasize", "target": "scan" } },
+        { "at": 6, "action": { "type": "emphasize", "target": "render" } }
+      ]
+    },
+    {
+      "id": "s03-journey",
+      "section": "plainEnglish",
+      "primitive": {
+        "template": "step-journey",
+        "content": {
+          "title": "From notes to a site",
+          "steps": [
+            { "label": "Install", "detail": "npm i -g leaflet-cli" },
+            { "label": "Run", "detail": "leaflet build ./notes" },
+            { "label": "Scan", "detail": "Find every .md file" },
+            { "label": "Render", "detail": "Markdown to HTML" },
+            { "label": "Done", "detail": "Host ./dist anywhere" }
+          ],
+          "staggerMs": 900
+        }
+      },
+      "narration": "From a user's side it's three commands. Install it, run it against your notes folder, and a few seconds later you have a site you can host anywhere.",
+      "holdSeconds": 12,
+      "transition": { "type": "fade", "durationMs": 500 },
+      "beats": [
+        { "at": 2, "action": { "type": "emphasize", "target": "0" } },
+        { "at": 5, "action": { "type": "emphasize", "target": "1" } },
+        { "at": 8, "action": { "type": "emphasize", "target": "4" } }
+      ]
+    },
+    {
+      "id": "s04-outro",
+      "section": "plainEnglish",
+      "primitive": {
+        "template": "outro-card",
+        "content": {
+          "takeaway": "A focused, single-purpose tool: read Markdown, write HTML. No server, no database, no surprises.",
+          "observation": "plain-english",
+          "analysisDate": "2026-06-21",
+          "brand": "Lenzon",
+          "nextSteps": [
+            "Entry point: src/cli.ts",
+            "The interesting logic is in src/render.ts"
+          ]
+        }
+      },
+      "narration": "That's the whole tool. If you want to dig in, start at the CLI entry point and follow it into the renderer. Thanks for watching.",
+      "holdSeconds": 6,
+      "transition": { "type": "fade", "durationMs": 500 },
+      "beats": [
+        { "at": 2, "action": { "type": "emphasize", "target": "observation" } }
+      ]
+    }
+  ]
+}

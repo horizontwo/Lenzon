@@ -1,0 +1,50 @@
+{
+  "name": "@lenzon/player",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Lenzon player — Vite + React runtime that plays PresentationScripts.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./src/index.css",
+    "./pipeline/GenerateFlow": "./src/pipeline/GenerateFlow.tsx",
+    "./pipeline/PipelinePanel": "./src/pipeline/PipelinePanel.tsx",
+    "./pipeline/api": "./src/pipeline/api.ts",
+    "./pipeline/parsePrUrl": "./src/pipeline/parsePrUrl.ts",
+    "./pipeline/runsFormat": "./src/pipeline/runsFormat.ts",
+    "./pipeline/ShareModal": "./src/pipeline/ShareModal.tsx",
+    "./pipeline/ExportModal": "./src/pipeline/ExportModal.tsx",
+    "./Viewer": "./src/Viewer.tsx",
+    "./templates": "./src/templates/index.ts",
+    "./templates/registry": "./src/templates/registry.ts"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --noEmit"
+  },
+  "dependencies": {
+    "@lottiefiles/dotlottie-web": "^0.44.0",
+    "@lenzon/shared-types": "*",
+    "@sinonjs/fake-timers": "^15.4.0",
+    "@types/three": "^0.183.1",
+    "animejs": "^3.2.2",
+    "prismjs": "^1.29.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.183.2"
+  },
+  "devDependencies": {
+    "@types/animejs": "^3.1.12",
+    "@types/node": "^20.19.0",
+    "@types/prismjs": "^1.26.4",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  }
+}

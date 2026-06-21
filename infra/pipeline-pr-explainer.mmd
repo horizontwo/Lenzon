@@ -1,0 +1,43 @@
+%% Lenzon — Live PR-explainer pipeline (current state, 2026-06-04)
+%% Source of truth: PIPELINE.md, INFRASTRUCTURE.md
+flowchart TD
+    GH([GitHub: PR opened / synchronize / reopened]) -->|webhook| WH
+
+    subgraph VERCEL["Vercel (Next.js) — control plane"]
+        WH[handlePullRequestEvent]
+        WH --> UPSERT["upsert PrExplainerRun (status=stub)<br/>+ post placeholder comment"]
+        UPSERT --> ENQ["enqueueJob('pipeline', prRunId)<br/>HMAC-signed envelope"]
+        UPSERT --> R200([return 200 to GitHub])
+        PAINT["/internal/pr-explainer-paint<br/>(check-run + comment paints)"]
+        RESULT["/internal/pr-explainer-result<br/>(HMAC status writes)"]
+    end
+
+    ENQ -->|POST /v1/enqueue| LAMBDA
+
+    subgraph AWS["AWS — data plane"]
+        LAMBDA["Lambda: verify HMAC<br/>+ replay window"] -->|sqs:SendMessage| SQS[(pipeline / clone queue)]
+        SQS -->|EventBridge Pipe| WORKER
+
+        subgraph WORKER["Fargate pipeline worker (1 msg = 1 PR run)"]
+            direction TB
+            QGATE{quota gate:<br/>orphan? balance? GH conn?}
+            QGATE -->|blocked| BLOCK["edit comment → friendly blocked body<br/>status=quota_blocked, exit"]
+            QGATE -->|ok| CLONE["paint 'cloning'<br/>git clone w/ token → tar → S3"]
+            CLONE --> TRIAGE["paint 'analyzing'<br/>triage gnome (Haiku)"]
+            TRIAGE --> ANALYZE["analysis gnome (Haiku*)"]
+            ANALYZE --> PRODUCE["paint 'rendering'<br/>producer (pr-explainer slug)"]
+            PRODUCE --> AUDIO["inline audio render (TTS)"]
+            AUDIO --> SHARE["mint shareToken<br/>Script.visibility=unlisted"]
+            SHARE --> FINAL["edit PR comment → final body<br/>watch link + TL;DR + cost"]
+        end
+    end
+
+    CLONE -.paint.-> PAINT
+    TRIAGE -.paint.-> PAINT
+    PRODUCE -.paint.-> PAINT
+    FINAL -.status.-> RESULT
+    BLOCK -.status.-> RESULT
+    PAINT --> GH
+    FINAL --> GH
+
+    %% * analysis model flipped Sonnet 4.5 -> Haiku 4.5 on 2026-06-04 (A/B pending)

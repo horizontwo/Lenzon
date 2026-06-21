@@ -1,0 +1,6154 @@
+/* ══════════════════════════════════════════════════════════════════════
+ * lenzon/ui v0.1 — design tokens + primitive styles.
+ *
+ * This file is the single source of truth for design tokens, primitive
+ * classes (.cs-*), and per-template positioning/reveal rules (.sb-*).
+ * The imperative templates in apps/player/src/templates/ consume the
+ * cs-* classes directly via el.classList. See docs/TEMPLATE-SPEC.md for
+ * the template contract and the levers-in-order guidance for visual
+ * changes (§11–§13).
+ *
+ * Edit rules:
+ *   - Additive. Do not remove a --cs-* variable without auditing every
+ *     template consumer.
+ *   - Hex literals / font-family strings live only in this block.
+ *     Templates must reference var(--cs-*).
+ * ═════════════════════════════════════════════════════════════════════ */
+
+/* Instrument Serif — the display voice. Self-hosted under /fonts/ so
+ * third-party embed hosts stay CSP-clean. Only regular + italic are
+ * loaded; templates use italic via the .cs-title class. */
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/instrument-serif-regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/instrument-serif-italic.woff2') format('woff2');
+}
+
+:root {
+  /* Backdrop */
+  --cs-bg-0: #0a0d14;
+  --cs-bg-1: #0e1320;
+  --cs-bg-2: #131a2b;
+
+  /* Ink */
+  --cs-ink-1: #f2efe8;
+  --cs-ink-2: #c8c5bd;
+  --cs-ink-3: #8a897f;
+  --cs-ink-4: #4d4f55;
+
+  /* Glass — default */
+  --cs-glass-bg:      hsl(220 40% 14% / 0.62);
+  --cs-glass-bg-alt:  hsl(220 40% 10% / 0.55);
+  --cs-glass-edge:    hsl(220 30% 80% / 0.14);
+  --cs-glass-edge-in: hsl(220 30% 100% / 0.06);
+  --cs-glass-border:  hsl(220 25% 70% / 0.12);
+
+  /* Glass — sunken (nested content) */
+  --cs-glass-sunken-bg:      hsl(220 40% 8% / 0.55);
+  --cs-glass-sunken-bg-alt:  hsl(220 40% 6% / 0.50);
+  --cs-glass-sunken-edge:    hsl(220 30% 80% / 0.08);
+  --cs-glass-sunken-edge-in: hsl(220 30% 100% / 0.03);
+  --cs-glass-sunken-border:  hsl(220 25% 70% / 0.08);
+
+  /* Shadow — the one plate shadow */
+  --cs-shadow-plate:
+    0 1px 0 hsl(220 30% 100% / 0.05) inset,
+    0 0 0 1px hsl(220 30% 100% / 0.04) inset,
+    0 24px 60px -20px hsl(220 60% 3% / 0.8);
+
+  /* Accents — budget is ONE warm element visible per template view. */
+  --cs-accent-warm: oklch(0.78 0.14 60);
+  --cs-accent-cool: oklch(0.78 0.14 240);
+  --cs-accent-warn: oklch(0.72 0.16 30);
+  --cs-accent-ok:   oklch(0.78 0.12 160);
+
+  /* Type. UI face stays on system-ui intentionally (no Inter Tight). */
+  --cs-font-display: 'Instrument Serif', 'Times New Roman', serif;
+  --cs-font-ui:      system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --cs-font-mono:    'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+
+  /* Font size scale. Tight steps at the body range (1–7) where most
+   * content lives; broader gaps for headline/display (8–13). Template
+   * `sb-*` rules and `.cs-*` primitives must reference these; hardcoded
+   * px literals only belong inside `.cs-title--*` / `.cs-grade--*` size
+   * modifiers (their whole purpose is to own a specific size). */
+  --cs-fs-1:  10px;  /* nano / fine print */
+  --cs-fs-2:  11px;  /* eyebrow, mono-caption, cardinality marks */
+  --cs-fs-3:  12px;  /* caption */
+  --cs-fs-4:  13px;  /* small body (most common) */
+  --cs-fs-5:  14px;  /* body */
+  --cs-fs-6:  15px;  /* body-lg */
+  --cs-fs-7:  16px;  /* lead */
+  --cs-fs-8:  18px;  /* subtitle */
+  --cs-fs-9:  20px;  /* h5 */
+  --cs-fs-10: 22px;  /* h4 */
+  --cs-fs-11: 24px;  /* h3 */
+  --cs-fs-12: 28px;  /* h2 */
+  --cs-fs-13: 32px;  /* h1 */
+
+  /* Space (4pt grid) */
+  --cs-s-1:  4px;
+  --cs-s-2:  8px;
+  --cs-s-3:  12px;
+  --cs-s-4:  16px;
+  --cs-s-5:  24px;
+  --cs-s-6:  32px;
+  --cs-s-7:  48px;
+  --cs-s-8:  64px;
+  --cs-s-9:  96px;
+
+  /* Radii */
+  --cs-r-s:  4px;
+  --cs-r-m:  8px;
+  --cs-r-l:  14px;
+  --cs-r-xl: 22px;
+
+  /* Motion */
+  --cs-motion-fast: 120ms cubic-bezier(.2, .7, .2, 1);
+  --cs-motion-base: 220ms cubic-bezier(.2, .7, .2, 1);
+  --cs-motion-slow: 420ms cubic-bezier(.2, .7, .2, 1);
+
+  /* Stage safe area. The 1920×1080 design surface lands in the recorder
+   * 1:1, and in-page hosts scale uniformly. 64px ≈ 6% of 1080 — wide
+   * enough for transition wipes, the future caption bar, and a margin
+   * of error around CRT-safe-zone behaviors. Full-bleed templates clamp
+   * their max-width to var(--sb-stage-w-max) so content never butts the
+   * frame edge regardless of stage size. */
+  --sb-stage-inset: 64px;
+  --sb-stage-w-max: calc(100% - 2 * var(--sb-stage-inset));
+
+  /* Primitive size tokens. Bumped for the 1920×1080 video surface so
+   * .cs-numlist content (title-bullets, purpose-bullets, etc.) reads at
+   * the right physical scale relative to the canvas headline. Edit one
+   * token here to retune all numlist consumers at once. */
+  --cs-numlist-fs:    var(--cs-fs-12);  /* row body — 28px */
+  --cs-numlist-n-fs:  var(--cs-fs-7);   /* zero-padded number — 16px */
+  --cs-numlist-pad:   var(--cs-s-5);    /* row vertical padding — 24px */
+}
+
+/* .cs-room — the backdrop every template sits on. Two soft lights +
+ * grain. Apply to the outer frame, not to individual plates. */
+.cs-room {
+  position: relative;
+  background:
+    radial-gradient(60% 40% at 12% 0%, hsl(40 40% 20% / 0.45), transparent 60%),
+    radial-gradient(50% 40% at 100% 100%, hsl(230 50% 18% / 0.5), transparent 60%),
+    linear-gradient(180deg, var(--cs-bg-1), var(--cs-bg-0) 70%);
+}
+.cs-room::before {
+  content: '';
+  position: absolute; inset: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .12 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ── Plate ───────────────────────────────────────────────────────── */
+
+.cs-plate {
+  position: relative;
+  border-radius: var(--cs-r-l);
+  border: 1px solid var(--cs-glass-border);
+  box-shadow: var(--cs-shadow-plate);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  background:
+    linear-gradient(180deg, var(--cs-glass-bg), var(--cs-glass-bg-alt));
+  color: var(--cs-ink-1);
+  overflow: hidden;
+}
+.cs-plate::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--cs-glass-edge) 20%,
+    var(--cs-glass-edge) 80%,
+    transparent
+  );
+  pointer-events: none;
+}
+.cs-plate::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: calc(var(--cs-r-l) - 1px);
+  border: 1px solid var(--cs-glass-edge-in);
+  pointer-events: none;
+}
+.cs-plate--sunken {
+  border-color: var(--cs-glass-sunken-border);
+  background:
+    linear-gradient(180deg, var(--cs-glass-sunken-bg), var(--cs-glass-sunken-bg-alt));
+  box-shadow:
+    0 1px 0 hsl(220 30% 100% / 0.03) inset,
+    0 0 0 1px hsl(220 30% 0% / 0.15) inset;
+  backdrop-filter: blur(10px) saturate(110%);
+  -webkit-backdrop-filter: blur(10px) saturate(110%);
+}
+.cs-plate--sunken::before { background: linear-gradient(90deg, transparent, var(--cs-glass-sunken-edge) 20%, var(--cs-glass-sunken-edge) 80%, transparent); }
+.cs-plate--sunken::after  { border-color: var(--cs-glass-sunken-edge-in); }
+
+/* ── PlateHeader ──────────────────────────────────────────────── */
+
+.cs-plate-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cs-s-4);
+  padding: var(--cs-s-3) var(--cs-s-5);
+  border-bottom: 1px solid var(--cs-glass-border);
+}
+.cs-plate-header-meta {
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-2);
+  color: var(--cs-ink-3);
+  letter-spacing: 0.08em;
+}
+
+/* ── Eyebrow ──────────────────────────────────────────────────── */
+
+.cs-eyebrow {
+  display: inline-block;
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-2);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.cs-eyebrow--dim  { color: var(--cs-ink-3); }
+.cs-eyebrow--ink  { color: var(--cs-ink-1); }
+.cs-eyebrow--warm { color: var(--cs-accent-warm); }
+.cs-eyebrow--cool { color: var(--cs-accent-cool); }
+
+/* ── Title ────────────────────────────────────────────────────── */
+
+.cs-title {
+  font-family: var(--cs-font-display);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.02;
+  color: var(--cs-ink-1);
+  margin: 0;
+  text-wrap: pretty;
+}
+.cs-title--m  { font-size: clamp(28px, 3.2vw, 40px); }
+.cs-title--l  { font-size: clamp(40px, 5vw,   64px); }
+.cs-title--xl { font-size: clamp(56px, 7vw,   96px); }
+
+.cs-mark {
+  background: transparent;
+  color: inherit;
+  position: relative;
+  padding: 0 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.cs-mark::after {
+  content: '';
+  position: absolute;
+  left: -2px; right: -2px; bottom: 4px;
+  height: 6px;
+  background: var(--cs-accent-warm);
+  opacity: 0.30;
+  z-index: -1;
+  border-radius: 2px;
+}
+
+/* ── Badge ────────────────────────────────────────────────────── */
+
+.cs-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--cs-r-m);
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-1);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--cs-glass-border);
+  background: hsl(220 30% 100% / 0.04);
+}
+.cs-badge--ink  { color: var(--cs-ink-2); }
+.cs-badge--warm { color: var(--cs-accent-warm); border-color: color-mix(in oklch, var(--cs-accent-warm) 30%, transparent); }
+.cs-badge--cool { color: var(--cs-accent-cool); border-color: color-mix(in oklch, var(--cs-accent-cool) 30%, transparent); }
+.cs-badge--warn { color: var(--cs-accent-warn); border-color: color-mix(in oklch, var(--cs-accent-warn) 30%, transparent); }
+.cs-badge--ok   { color: var(--cs-accent-ok);   border-color: color-mix(in oklch, var(--cs-accent-ok)   30%, transparent); }
+
+/* ── NumberedList ─────────────────────────────────────────────── */
+
+.cs-numlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: none;
+}
+.cs-numlist-item {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: var(--cs-s-3);
+  align-items: baseline;
+  padding: var(--cs-numlist-pad) 0;
+  border-bottom: 1px solid var(--cs-glass-border);
+  color: var(--cs-ink-2);
+  font-size: var(--cs-numlist-fs);
+  line-height: 1.5;
+}
+.cs-numlist-item:last-child { border-bottom: none; }
+.cs-numlist-n {
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-numlist-n-fs);
+  color: var(--cs-ink-3);
+  letter-spacing: 0.08em;
+}
+.cs-numlist-item.is-emph .cs-numlist-n { color: var(--cs-accent-warm); }
+.cs-numlist-item.is-emph .cs-numlist-t {
+  color: var(--cs-ink-1);
+  position: relative;
+}
+.cs-numlist-item.is-emph .cs-numlist-t::before {
+  content: '';
+  position: absolute;
+  inset: 0.2em -0.3em;
+  background: var(--cs-accent-warm);
+  opacity: 0.10;
+  border-radius: var(--cs-r-s);
+  z-index: -1;
+}
+
+/* ── Callout ──────────────────────────────────────────────────── */
+
+.cs-callout {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.cs-callout-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.cs-callout-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 2px 8px;
+  border-radius: var(--cs-r-m);
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-2);
+  letter-spacing: 0.08em;
+  background: var(--cs-glass-bg);
+  border: 1px solid var(--cs-glass-border);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  white-space: nowrap;
+}
+.cs-callout-label--warm { color: var(--cs-accent-warm); }
+.cs-callout-label--cool { color: var(--cs-accent-cool); }
+
+/* ── Grade / Severity ─────────────────────────────────────────── */
+
+.cs-grade {
+  display: inline-block;
+  font-family: var(--cs-font-display);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--cs-ink-1);
+}
+.cs-grade--m  { font-size: 48px; }
+.cs-grade--l  { font-size: 96px; }
+.cs-grade--good { color: var(--cs-ink-1); }
+.cs-grade--mid  { color: var(--cs-accent-warm); }
+.cs-grade--poor { color: var(--cs-accent-warn); }
+
+.cs-severity {
+  display: inline-block;
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background:
+    linear-gradient(
+      90deg,
+      currentColor 0,
+      currentColor calc(var(--cs-severity-score, 0.5) * 100%),
+      hsl(220 30% 100% / 0.08) calc(var(--cs-severity-score, 0.5) * 100%),
+      hsl(220 30% 100% / 0.08) 100%
+    );
+}
+.cs-severity--good { color: var(--cs-accent-ok); }
+.cs-severity--mid  { color: var(--cs-accent-warm); }
+.cs-severity--poor { color: var(--cs-accent-warn); }
+
+/* ══════════════════════════════════════════════════════════════════════
+ * End lenzon/ui v0.1. Existing sb-* styles follow.
+ * ═════════════════════════════════════════════════════════════════════ */
+
+:root {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+/* Dark chrome is scoped to the internal exerciser (`.sb-app`) — the
+   customer-facing surfaces (`.sb-generate`, Next pages) stay on the
+   light brand palette and must not inherit a dark background. */
+.sb-app {
+  color-scheme: dark;
+  color: #e6e8ee;
+  background: #0b1020;
+}
+
+.sb-app button {
+  font: inherit;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 150ms ease, transform 150ms ease, border-color 150ms ease;
+}
+
+.sb-app button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.sb-app button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.sb-app button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* The presentation stage itself renders against black regardless of
+   chrome — all templates (code panes, diagrams) are designed for a
+   dark backdrop. */
+.sb-presentation {
+  background: #000000;
+  color: #e6e8ee;
+}
+
+/* ---------- App layout ---------- */
+
+.sb-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: radial-gradient(ellipse at top, #18223d 0%, #0b1020 60%);
+}
+
+.sb-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+}
+
+.sb-toolbar h1 {
+  font-size: var(--cs-fs-8);
+  margin: 0 12px 0 0;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
+}
+
+.sb-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sb-toolbar-label {
+  font-size: var(--cs-fs-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.6;
+  margin-right: 4px;
+}
+
+/* Studio v2 splits the toolbar into two rows: the top row is identity +
+   tab switcher + session chrome; the sub row hosts the active tab's own
+   controls. */
+.sb-toolbar-top {
+  padding-bottom: 8px;
+  border-bottom: none;
+}
+
+.sb-toolbar-sub {
+  padding-top: 6px;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.sb-toolbar-sub:empty {
+  display: none;
+}
+
+.sb-toolbar-spacer {
+  margin-left: auto;
+}
+
+.sb-template-select {
+  font: inherit;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+}
+
+.sb-template-select:disabled {
+  opacity: 0.5;
+}
+
+.sb-stage-host {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ---------- Templates panel (Studio v2) ---------- */
+
+.sb-templates-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sb-templates-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 12px 8px;
+}
+
+.sb-template-payload {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  padding: 8px 10px;
+  color: inherit;
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  resize: vertical;
+  min-height: 60px;
+  height: 80px;
+}
+
+.sb-template-payload:focus {
+  outline: 1px solid rgba(96, 165, 250, 0.6);
+  border-color: rgba(96, 165, 250, 0.6);
+}
+
+.sb-template-error {
+  font-size: var(--cs-fs-3);
+  color: #fca5a5;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* ---------- Agents panel (Studio v2) ---------- */
+
+.sb-agents-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sb-agents-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 12px 8px;
+}
+
+.sb-agents-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 6px 16px;
+  margin: 0;
+  font-size: var(--cs-fs-3);
+}
+
+.sb-agents-meta > div {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.sb-agents-meta-wide {
+  grid-column: 1 / -1;
+}
+
+.sb-agents-meta dt {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.sb-agents-meta dd {
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sb-agents-meta-wide dd {
+  white-space: normal;
+  opacity: 0.85;
+}
+
+.sb-agents-prompt {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 10px 12px;
+  margin: 0;
+  color: inherit;
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  max-height: 40vh;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ---------- Stack stamp (Studio) ---------- */
+
+.sb-stack-stamp {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 6px 14px;
+  background: rgba(15, 23, 42, 0.55);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.sb-stack-stamp-label {
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.sb-stack-stamp-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sb-stack-stamp-key {
+  color: #64748b;
+}
+
+.sb-stack-stamp-item code {
+  font-family: var(--cs-ff-mono, ui-monospace, monospace);
+  color: #e2e8f0;
+  background: rgba(30, 41, 59, 0.7);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.sb-stack-stamp-muted {
+  color: #64748b;
+  font-style: italic;
+}
+
+/* ---------- Viewer ---------- */
+
+.sb-viewer-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-size: var(--cs-fs-5);
+  letter-spacing: 0.02em;
+  opacity: 0.8;
+}
+
+.sb-viewer-error {
+  color: #fca5a5;
+  opacity: 1;
+}
+
+/* Minimal-chrome control bar — overlays the bottom of the stage when the
+   viewer runs framed (shell-wrapped or bare embed) with its full toolbar
+   hidden. Translucent so it reads as an in-surface control, not page chrome. */
+.sb-viewer-minibar {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 5;
+}
+
+/* Scoped under .sb-app so these beat the generic `.sb-app button` base rule
+   (same specificity, but `.sb-app button` would otherwise win on source order
+   for background/border). Without this the buttons inherit the gray pill. */
+.sb-app .sb-viewer-minibar-btn {
+  min-width: 44px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: #f8fafc;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sb-app .sb-viewer-minibar-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.sb-app .sb-viewer-minibar-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Play/pause is the primary action — pale green so it reads distinctly from
+   the ▶ "next" glyph next to it. */
+.sb-app .sb-viewer-minibar-btn-play {
+  background: rgba(182, 240, 217, 0.92);
+  color: #0b3d2c;
+}
+
+.sb-app .sb-viewer-minibar-btn-play:hover:not(:disabled) {
+  background: rgba(182, 240, 217, 1);
+}
+
+.sb-viewer-minibar-label {
+  padding: 0 6px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: rgba(248, 250, 252, 0.85);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Capture mode (headless recorder) ---------- */
+
+/*
+ * When the page is rendered for video export (`?renderMode=capture`), hide
+ * every viewer chrome surface. The recorder takes 1920×1080 screenshots of
+ * the stage; toolbars, status messages, and scrollbars must not appear in
+ * any frame. See docs/lenzon/VIDEO-EXPORT-PLAN.md step 2.
+ */
+.sb-viewer[data-render-mode='capture'] .sb-toolbar,
+.sb-viewer[data-render-mode='capture'] .sb-viewer-minibar,
+.sb-viewer[data-render-mode='capture'] .sb-viewer-status {
+  display: none;
+}
+
+/* ---------- Presentation: layered DOM + canvas ---------- */
+
+.sb-presentation {
+  position: absolute;
+  inset: 0;
+}
+
+.sb-dom-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Child interactive elements can re-enable pointer events. */
+}
+
+.sb-canvas-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.sb-chrome-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  display: none;
+  background: var(--cs-bg-0, #0a0d14);
+}
+
+.sb-chrome-layer.is-active {
+  display: block;
+}
+
+/* ---------- title-bullets template ----------
+ * Baseline appearance (glass plate, serif title, numbered list, warm
+ * emphasis) comes from the .cs-plate / .cs-numlist primitives at the
+ * top of this file. These rules only handle:
+ *   - stage positioning of the plate (below the canvas title)
+ *   - entrance reveal on .cs-numlist-item via .sb-visible
+ */
+
+.sb-title-bullets-plate {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1280px, var(--sb-stage-w-max));
+  padding: var(--cs-s-6) var(--cs-s-7);
+  /* top is set inline by title-bullets.ts after measuring the plate so the
+   * title+plate composition centers vertically in the stage. */
+}
+
+.sb-title-bullets-plate .cs-numlist-item {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 450ms ease,
+    transform 450ms ease,
+    color var(--cs-motion-base);
+}
+
+.sb-title-bullets-plate .cs-numlist-item.sb-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- code-zoom template ----------
+ * Baseline surface comes from .cs-plate--sunken above (glass bg, radius,
+ * border, shadow). Only sizing, positioning, zoom transition, and
+ * line-level treatments live here.
+ */
+
+.sb-code-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(var(--sb-start-scale, 0.15));
+  opacity: 0;
+  max-width: 85%;
+  max-height: 80%;
+  transition: transform 700ms cubic-bezier(0.2, 0.9, 0.25, 1.15), opacity 350ms ease;
+  pointer-events: auto;
+}
+
+.sb-code-wrapper.sb-zoom-active {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.sb-code-wrapper.sb-zoom-out {
+  transform: translate(-50%, -50%) scale(0.2);
+  opacity: 0;
+}
+
+.sb-code {
+  margin: 0;
+  padding: var(--cs-s-6) var(--cs-s-7);
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-12);
+  line-height: 1.55;
+  color: var(--cs-ink-1);
+  overflow: auto;
+}
+
+.sb-code code {
+  display: block;
+  white-space: pre;
+  background: transparent;
+}
+
+.sb-line {
+  display: inline-block;
+  width: 100%;
+  padding: 0 10px;
+  margin: 0 -10px;
+  border-radius: var(--cs-r-s);
+  transition: background-color 300ms ease, box-shadow 300ms ease;
+}
+
+.sb-line-highlight {
+  background: color-mix(in oklch, var(--cs-accent-warm) 12%, transparent);
+  box-shadow: inset 3px 0 0 var(--cs-accent-warm);
+}
+
+.sb-line-pulse {
+  animation: sb-code-pulse 1.4s ease;
+}
+
+@keyframes sb-code-pulse {
+  0%,
+  100% {
+    background-color: transparent;
+    box-shadow: inset 3px 0 0 transparent;
+  }
+  30%,
+  60% {
+    background-color: color-mix(in oklch, var(--cs-accent-warm) 30%, transparent);
+    box-shadow: inset 3px 0 0 var(--cs-accent-warm);
+  }
+}
+
+/* ---------- Prism: Tomorrow-ish dark token colors ---------- */
+
+.sb-code .token.comment,
+.sb-code .token.prolog,
+.sb-code .token.doctype,
+.sb-code .token.cdata {
+  color: #6a737d;
+  font-style: italic;
+}
+
+.sb-code .token.punctuation {
+  color: #c9d1d9;
+}
+
+.sb-code .token.property,
+.sb-code .token.tag,
+.sb-code .token.boolean,
+.sb-code .token.number,
+.sb-code .token.constant,
+.sb-code .token.symbol {
+  color: #f78c6c;
+}
+
+.sb-code .token.selector,
+.sb-code .token.attr-name,
+.sb-code .token.string,
+.sb-code .token.char,
+.sb-code .token.builtin {
+  color: #9ece6a;
+}
+
+.sb-code .token.operator,
+.sb-code .token.entity,
+.sb-code .token.url,
+.sb-code .token.variable {
+  color: #89ddff;
+}
+
+.sb-code .token.atrule,
+.sb-code .token.attr-value,
+.sb-code .token.function,
+.sb-code .token.class-name {
+  color: #7aa2f7;
+}
+
+.sb-code .token.keyword {
+  color: #bb9af7;
+  font-weight: 600;
+}
+
+.sb-code .token.regex,
+.sb-code .token.important {
+  color: #f7768e;
+}
+
+/* ---------- purpose-bullets template ----------
+ * Baseline (glass plate, numbered list, warm emphasis) comes from the
+ * .cs-plate / .cs-numlist / .cs-badge primitives above. Only positioning
+ * and reveal transitions live here.
+ */
+
+.sb-purpose-plate {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1280px, var(--sb-stage-w-max));
+  padding: var(--cs-s-6) var(--cs-s-7);
+  /* top is set inline by purpose-bullets.ts after measuring the plate so
+   * the title+plate composition centers vertically in the stage. */
+}
+
+.sb-purpose-fileref {
+  margin-bottom: var(--cs-s-4);
+}
+
+.sb-purpose-row {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--cs-s-3);
+  flex-wrap: wrap;
+}
+
+.sb-purpose-typebadge {
+  flex: 0 0 auto;
+  align-self: baseline;
+}
+
+.sb-purpose-text {
+  flex: 1 1 auto;
+}
+
+.sb-purpose-plate .cs-numlist-item {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 450ms ease,
+    transform 450ms ease,
+    color var(--cs-motion-base);
+}
+
+.sb-purpose-plate .cs-numlist-item.sb-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- emphasis-word template ----------
+ * Baseline (mono + uppercase + spacing + dim ink) comes from the
+ * .cs-eyebrow primitive. Only positioning and reveal transitions live
+ * here. The word itself renders on canvas with no DOM chrome.
+ */
+
+.sb-emphasis-subtitle {
+  position: absolute;
+  top: 62%;
+  left: 50%;
+  width: min(1000px, 75%);
+  font-size: var(--cs-fs-11);
+  text-align: center;
+  line-height: 1.6;
+  opacity: 0;
+  transform: translateX(-50%) translateY(12px);
+  transition: opacity 800ms ease, transform 600ms ease;
+}
+
+.sb-emphasis-subtitle.sb-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ---------- center-stage template ---------- */
+/* center-stage is fully canvas-rendered — no additional CSS needed */
+
+/* ---------- code-cloud template ---------- */
+
+/* ---------- code-cloud template ----------
+ * Outer container is one .cs-plate (positioned here); items are absolute
+ * inside it. Per-item color is set inline (CSS var, palette.* alias, or
+ * literal color) via the `categoryColors` slot.
+ */
+
+.sb-cloud-plate {
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  right: 5%;
+  bottom: 5%;
+  padding: var(--cs-s-5);
+}
+
+.sb-cloud {
+  position: absolute;
+  inset: 0;
+}
+
+.sb-cloud-item {
+  position: absolute;
+  transform: translate(-50%, -50%) scale(0.5);
+  opacity: 0;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  transition: opacity 500ms ease, transform 600ms cubic-bezier(0.2, 0.9, 0.25, 1.15),
+    color var(--cs-motion-base), text-shadow var(--cs-motion-base);
+}
+
+.sb-cloud-item.sb-visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Float is opt-in via the `float: true` slot — calm by default. */
+.sb-cloud-item.sb-cloud-float.sb-visible {
+  animation: sb-cloud-float var(--sb-cloud-float-dur, 5000ms) ease-in-out
+    var(--sb-cloud-float-delay, 0ms) infinite alternate;
+}
+
+.sb-cloud-item.sb-cloud-emphasize {
+  color: var(--cs-accent-warm) !important;
+  text-shadow: 0 0 20px color-mix(in oklch, var(--cs-accent-warm) 60%, transparent);
+}
+
+@keyframes sb-cloud-float {
+  0% { margin-top: 0; }
+  100% { margin-top: -8px; }
+}
+
+/* ---------- transform-grid template ----------
+ * Outer wrapper is a .cs-plate; each stage is a nested .cs-plate--sunken.
+ * Surface chrome (bg, border, radius, shadow) all comes from those
+ * primitives — only layout, per-stage reveal, and the warm-ring
+ * emphasize treatment live here.
+ */
+
+.sb-transform-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(1600px, var(--sb-stage-w-max));
+  padding: var(--cs-s-6) var(--cs-s-7);
+}
+
+.sb-transform-title {
+  text-align: center;
+  margin: 0 0 var(--cs-s-6);
+}
+
+.sb-transform-grid {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--cs-s-3);
+  flex-wrap: nowrap;
+}
+
+.sb-transform-stage {
+  flex: 1 1 0;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: var(--cs-s-5);
+  opacity: 0;
+  transform: translateX(24px);
+  transition: opacity 500ms ease, transform 500ms ease,
+    box-shadow 300ms ease;
+}
+
+.sb-transform-stage.sb-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sb-transform-stage.sb-transform-active {
+  box-shadow:
+    0 0 0 2px var(--cs-accent-warm),
+    0 1px 0 hsl(220 30% 100% / 0.03) inset,
+    0 0 0 1px hsl(220 30% 0% / 0.15) inset;
+}
+
+.sb-transform-display {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+  margin-bottom: var(--cs-s-4);
+}
+
+.sb-transform-code {
+  margin: 0;
+  padding: var(--cs-s-3) var(--cs-s-4);
+  width: 100%;
+  box-sizing: border-box;
+  background: hsl(220 40% 6% / 0.6);
+  border-radius: var(--cs-r-m);
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-7);
+  line-height: 1.5;
+  color: var(--cs-ink-1);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+}
+
+.sb-transform-text {
+  font-size: var(--cs-fs-9);
+  line-height: 1.5;
+  color: var(--cs-ink-2);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.sb-transform-label {
+  display: block;
+  text-align: center;
+  padding-top: var(--cs-s-2);
+  border-top: 1px solid var(--cs-glass-border);
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+.sb-transform-connector {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--cs-s-3);
+  font-size: var(--cs-fs-13);
+  color: var(--cs-ink-3);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 350ms ease, transform 350ms ease;
+}
+
+.sb-transform-connector.sb-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.sb-transform-connector-fade {
+  opacity: 0;
+  letter-spacing: 0.2em;
+}
+
+.sb-transform-connector-fade.sb-visible {
+  opacity: 0.6;
+}
+
+/* ---------- compare-split template ----------
+ * Baseline surface comes from .cs-plate (background, border, shadow,
+ * radius). Only layout, the producer-driven --sb-compare-accent rule,
+ * reveal transitions, and the warm-ring emphasize treatment live here.
+ */
+
+.sb-compare-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(1600px, var(--sb-stage-w-max));
+}
+
+.sb-compare-title {
+  text-align: center;
+  margin: 0 0 var(--cs-s-6);
+}
+
+.sb-compare-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  gap: var(--cs-s-5);
+}
+
+.sb-compare-row-nodivider {
+  grid-template-columns: 1fr 1fr;
+}
+
+.sb-compare-panel {
+  --sb-compare-accent: var(--cs-accent-cool);
+  padding: var(--cs-s-6) var(--cs-s-7);
+  opacity: 0;
+  transition: opacity 520ms ease, transform 520ms ease,
+    box-shadow 300ms ease;
+}
+
+/* Producer-provided accent shows as a colored top-rule. Drawn on top of
+ * .cs-plate::before's specular so it reads as a categorical tag. */
+.sb-compare-panel::before {
+  background: var(--sb-compare-accent) !important;
+  height: 3px !important;
+  opacity: 0.9;
+}
+
+.sb-compare-panel-left {
+  transform: translateX(-32px);
+}
+
+.sb-compare-panel-right {
+  transform: translateX(32px);
+}
+
+.sb-compare-panel.sb-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sb-compare-panel.sb-compare-active {
+  box-shadow:
+    0 0 0 2px var(--cs-accent-warm),
+    var(--cs-shadow-plate);
+}
+
+.sb-compare-icon {
+  margin-bottom: var(--cs-s-2);
+}
+
+.sb-compare-heading {
+  font-family: var(--cs-font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--cs-fs-13);
+  line-height: 1.1;
+  color: var(--cs-ink-1);
+  margin-bottom: var(--cs-s-5);
+}
+
+.sb-compare-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sb-compare-bullets li {
+  position: relative;
+  padding: var(--cs-s-3) 0 var(--cs-s-3) var(--cs-s-5);
+  font-size: var(--cs-fs-9);
+  line-height: 1.5;
+  color: var(--cs-ink-2);
+  border-bottom: 1px solid var(--cs-glass-border);
+}
+
+.sb-compare-bullets li:last-child {
+  border-bottom: none;
+}
+
+.sb-compare-bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 22px;
+  width: 12px;
+  height: 2px;
+  background: var(--sb-compare-accent);
+  opacity: 0.7;
+}
+
+.sb-compare-divider {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--cs-glass-sunken-bg);
+  border: 1px solid var(--cs-glass-border);
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-7);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--cs-ink-3);
+  text-transform: uppercase;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 400ms ease, transform 400ms ease;
+}
+
+.sb-compare-divider-arrow {
+  font-size: var(--cs-fs-13);
+  text-transform: none;
+}
+
+.sb-compare-divider.sb-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (max-width: 720px) {
+  .sb-compare-row,
+  .sb-compare-row-nodivider {
+    grid-template-columns: 1fr;
+  }
+  .sb-compare-divider {
+    justify-self: center;
+  }
+  .sb-compare-panel-left,
+  .sb-compare-panel-right {
+    transform: translateY(24px);
+  }
+  .sb-compare-panel.sb-visible {
+    transform: translateY(0);
+  }
+}
+
+/* ---------- directory-tree template ----------
+ * Baseline surface comes from .cs-plate above. Row treatment mirrors the
+ * .cs-numlist shape (mono dim prefix + ink row body, warm .is-emph
+ * pulse). Only layout, positioning, and reveal live here.
+ */
+
+.sb-tree-plate {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(1280px, var(--sb-stage-w-max));
+  max-height: 80vh;
+  overflow: auto;
+  padding: var(--cs-s-6) var(--cs-s-7);
+  font-family: var(--cs-font-mono);
+  color: var(--cs-ink-2);
+}
+
+.sb-tree-root {
+  font-family: var(--cs-font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--cs-fs-13);
+  line-height: 1.1;
+  color: var(--cs-ink-1);
+  padding-bottom: var(--cs-s-4);
+  margin-bottom: var(--cs-s-4);
+  border-bottom: 1px solid var(--cs-glass-border);
+}
+
+.sb-tree-list {
+  font-size: var(--cs-fs-10);
+  line-height: 1.7;
+}
+
+.sb-tree-row {
+  display: flex;
+  align-items: center;
+  gap: var(--cs-s-2);
+  padding: 1px var(--cs-s-2);
+  border-radius: var(--cs-r-s);
+  white-space: pre;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 380ms ease, transform 380ms ease,
+    color var(--cs-motion-base);
+}
+
+.sb-tree-row.sb-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sb-tree-row.sb-tree-highlight .sb-tree-name {
+  color: var(--cs-ink-1);
+}
+
+.sb-tree-row.is-emph {
+  position: relative;
+}
+
+.sb-tree-row.is-emph .sb-tree-prefix {
+  color: var(--cs-accent-warm);
+}
+
+.sb-tree-row.is-emph .sb-tree-name {
+  color: var(--cs-ink-1);
+}
+
+.sb-tree-row.is-emph::before {
+  content: '';
+  position: absolute;
+  inset: 0 -0.3em;
+  background: var(--cs-accent-warm);
+  opacity: 0.10;
+  border-radius: var(--cs-r-s);
+  z-index: -1;
+}
+
+.sb-tree-prefix {
+  color: var(--cs-ink-4);
+  flex-shrink: 0;
+}
+
+.sb-tree-name {
+  white-space: nowrap;
+}
+
+.sb-tree-folder {
+  color: var(--cs-ink-1);
+  font-weight: 600;
+}
+
+.sb-tree-file {
+  font-family: var(--cs-font-ui);
+  color: var(--cs-ink-2);
+}
+
+.sb-tree-badge {
+  margin-left: var(--cs-s-1);
+}
+
+.sb-tree-note {
+  font-family: var(--cs-font-ui);
+  color: var(--cs-ink-3);
+  font-size: var(--cs-fs-8);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sb-tree-more {
+  color: var(--cs-ink-3);
+  font-style: italic;
+}
+
+.sb-tree-style-explorer .sb-tree-prefix {
+  display: none;
+}
+
+.sb-tree-style-explorer .sb-tree-row {
+  padding-left: calc(var(--cs-s-2) + var(--sb-tree-indent, 0) * 16px);
+}
+
+/* ---------- flow-diagram template (3D layer) ---------- */
+
+.sb-stage3d-host {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sb-canvas3d-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sb-css3d-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* ---------- flow-diagram template ----------
+ * Nodes and edges render as SVG; node rects consume --cs-glass-* tokens
+ * directly via fill/stroke attributes (see buildNode). Labels live in a
+ * foreignObject and use the cs-plate-header style — display-italic
+ * label in ink-1, so it matches other diagram titles.
+ */
+
+.sb-flow-node-label {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--cs-font-ui);
+  font-weight: 600;
+  font-size: var(--cs-fs-8);
+  color: var(--cs-ink-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.005em;
+}
+
+.sb-flow-edge-label {
+  font-family: var(--cs-font-ui);
+  font-size: var(--cs-fs-5);
+  color: var(--cs-ink-2);
+  background: var(--cs-glass-sunken-bg);
+  padding: 2px 8px;
+  border-radius: var(--cs-r-m);
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+}
+
+.sb-flow-fallback {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: var(--cs-s-4) var(--cs-s-5);
+  background: color-mix(in oklch, var(--cs-accent-warn) 15%, transparent);
+  border: 1px solid color-mix(in oklch, var(--cs-accent-warn) 30%, transparent);
+  border-radius: var(--cs-r-l);
+  color: var(--cs-accent-warn);
+}
+
+/* ---------- repo-pulse template ----------
+ * Header + signal pill + stat tiles + contributor card. All surfaces come
+ * from .cs-plate / .cs-plate--sunken / .cs-badge primitives; this block
+ * only owns layout, reveal transitions, and the warm-ring emphasize.
+ */
+
+.sb-repopulse-wrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--cs-s-7);
+  box-sizing: border-box;
+  color: var(--cs-ink-1);
+  font-family: var(--cs-font-ui);
+}
+
+.sb-repopulse-header,
+.sb-repopulse-signalblock,
+.sb-repopulse-stats,
+.sb-repopulse-contribs {
+  opacity: 0;
+  transition: opacity .5s ease, box-shadow .3s ease;
+}
+
+.sb-repopulse-header.sb-visible,
+.sb-repopulse-signalblock.sb-visible,
+.sb-repopulse-stats.sb-visible,
+.sb-repopulse-contribs.sb-visible {
+  opacity: 1;
+}
+
+.sb-repopulse-header {
+  text-align: center;
+  margin-bottom: var(--cs-s-5);
+}
+
+.sb-repopulse-repolabel {
+  margin-bottom: var(--cs-s-1);
+}
+
+.sb-repopulse-title {
+  margin: 0;
+}
+
+.sb-repopulse-signalblock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--cs-s-2);
+  margin-bottom: var(--cs-s-6);
+  transition: opacity .5s ease, transform .3s ease;
+}
+
+.sb-repopulse-signal {
+  padding: 12px 30px;
+  font-size: var(--cs-fs-7);
+  letter-spacing: .12em;
+}
+
+.sb-repopulse-signal.sb-emphasize {
+  box-shadow: 0 0 0 2px var(--cs-accent-warm),
+    0 0 24px color-mix(in oklch, var(--cs-accent-warm) 45%, transparent);
+  transform: scale(1.04);
+  transition: box-shadow .3s ease, transform .3s ease;
+}
+
+.sb-repopulse-caption {
+  font-size: var(--cs-fs-8);
+  color: var(--cs-ink-3);
+}
+
+.sb-repopulse-stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(160px, 1fr));
+  gap: var(--cs-s-4);
+  width: min(1400px, var(--sb-stage-w-max));
+  margin-bottom: var(--cs-s-6);
+}
+
+.sb-repopulse-stats.sb-emphasize {
+  box-shadow: 0 0 0 2px var(--cs-accent-warm);
+  border-radius: var(--cs-r-l);
+}
+
+.sb-repopulse-stat {
+  padding: var(--cs-s-3) var(--cs-s-2);
+  text-align: center;
+}
+
+.sb-repopulse-stat-value {
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-13);
+  font-weight: 600;
+  color: var(--cs-ink-1);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.sb-repopulse-stat-label {
+  margin-top: var(--cs-s-2);
+}
+
+.sb-repopulse-contribs {
+  padding: var(--cs-s-5) var(--cs-s-6);
+  width: min(1400px, var(--sb-stage-w-max));
+}
+
+.sb-repopulse-contribs.sb-emphasize {
+  box-shadow:
+    0 0 0 2px var(--cs-accent-warm),
+    var(--cs-shadow-plate);
+}
+
+.sb-repopulse-contribs-summary {
+  font-size: var(--cs-fs-9);
+  color: var(--cs-ink-2);
+  margin-bottom: var(--cs-s-4);
+  font-weight: 500;
+}
+
+.sb-repopulse-contribs-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cs-s-1);
+}
+
+.sb-repopulse-contrib-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--cs-s-5);
+  align-items: baseline;
+  padding: 8px 12px;
+  border-radius: var(--cs-r-s);
+  font-size: var(--cs-fs-8);
+  transition: background .3s ease, box-shadow .3s ease;
+}
+
+.sb-repopulse-contrib-row.sb-emphasize {
+  background: color-mix(in oklch, var(--cs-accent-warm) 12%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in oklch, var(--cs-accent-warm) 40%, transparent);
+}
+
+.sb-repopulse-contrib-name {
+  color: var(--cs-ink-1);
+  font-weight: 500;
+}
+
+.sb-repopulse-contrib-commits {
+  color: var(--cs-ink-3);
+  font-variant-numeric: tabular-nums;
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-7);
+}
+
+.sb-repopulse-contrib-last {
+  color: var(--cs-ink-4);
+  font-size: var(--cs-fs-6);
+}
+
+.sb-repopulse-contribs-empty {
+  color: var(--cs-ink-4);
+  font-size: var(--cs-fs-7);
+  font-style: italic;
+}
+
+/* ---------- sequence-diagram template ----------
+ * Pixel-tuned layout math (HEADER_H/ROW_H in the template) is kept as-is
+ * per the migration spec. Only the visual chrome is re-tokened: the
+ * actor heads use .cs-plate--sunken surface, labels use the mono face,
+ * and all strokes / fills route through --cs-ink / --cs-accent tokens.
+ * Responsive sizing is still on the backlog.
+ */
+
+.sb-seq-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(1500px, var(--sb-stage-w-max));
+  color: var(--cs-ink-1);
+  font-family: var(--cs-font-ui);
+}
+
+.sb-seq-title {
+  text-align: center;
+  margin: 0 0 var(--cs-s-5);
+}
+
+.sb-seq-stage {
+  position: relative;
+  width: 100%;
+  padding: 0;
+}
+
+.sb-seq-actor {
+  position: absolute;
+  top: 0;
+  transform: translate(-50%, 0);
+  opacity: 0;
+  transition: opacity 260ms ease, transform 260ms ease;
+  transform-origin: 50% 50%;
+}
+
+.sb-seq-actor.sb-visible {
+  opacity: 1;
+}
+
+.sb-seq-actor-inner {
+  padding: var(--cs-s-2) var(--cs-s-4);
+  font-weight: 600;
+  font-size: var(--cs-fs-8);
+  color: var(--cs-ink-1);
+  white-space: nowrap;
+  transition: box-shadow 240ms ease;
+}
+
+.sb-seq-actor.sb-seq-actor-active .sb-seq-actor-inner {
+  box-shadow:
+    0 0 0 2px var(--cs-accent-warm),
+    0 1px 0 hsl(220 30% 100% / 0.03) inset,
+    0 0 0 1px hsl(220 30% 0% / 0.15) inset;
+}
+
+.sb-seq-lifeline {
+  position: absolute;
+  width: 0;
+  /* Thicker + brighter than the default glass-border so the line stays
+   * visually present where labels, activations, and SVG arrows cross it. */
+  border-left: 3px dashed var(--cs-ink-3);
+  transform: translateX(-1.5px);
+  pointer-events: none;
+}
+
+.sb-seq-svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.sb-seq-arrow {
+  stroke-width: 2;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.sb-seq-arrow.sb-visible {
+  opacity: 1;
+}
+
+.sb-seq-arrow-request {
+  stroke: var(--cs-ink-1);
+}
+
+.sb-seq-arrow-response {
+  stroke: var(--cs-ink-3);
+  stroke-width: 1.5;
+}
+
+.sb-seq-arrow-self {
+  stroke: var(--cs-accent-cool);
+}
+
+.sb-seq-arrow.sb-seq-pulse {
+  stroke: var(--cs-accent-warm);
+  filter: drop-shadow(0 0 6px color-mix(in oklch, var(--cs-accent-warm) 70%, transparent));
+}
+
+.sb-seq-label {
+  position: absolute;
+  transform: translate(-50%, 0);
+  padding: 2px 8px;
+  /* No background, no shadow — a solid pill erases the dashed lifeline
+   * behind it, and a dark text-shadow halo blots out the line just as
+   * effectively. The dashed line is dim enough that crisp ink-1 mono
+   * text reads cleanly through it. */
+  background: transparent;
+  border-radius: var(--cs-r-s);
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-7);
+  color: var(--cs-ink-1);
+  opacity: 0;
+  transition: opacity 260ms ease, transform 260ms ease,
+    box-shadow 240ms ease, color 240ms ease;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.sb-seq-label.sb-visible {
+  opacity: 1;
+}
+
+.sb-seq-label-response {
+  color: var(--cs-ink-3);
+}
+
+.sb-seq-label-self {
+  color: var(--cs-accent-cool);
+  transform: translate(0, 0); /* self-label sits to the right of the hook */
+}
+
+.sb-seq-label.sb-seq-pulse {
+  color: var(--cs-accent-warm);
+  box-shadow: 0 0 0 2px color-mix(in oklch, var(--cs-accent-warm) 45%, transparent);
+}
+
+.sb-seq-activation {
+  position: absolute;
+  /* Translucent pill that signals "this lane is on the call stack" but
+   * doesn't blot out the dashed lifeline running through it. No border
+   * (a solid edge would frame two visible vertical bars and visually
+   * compete with the line). */
+  width: 8px;
+  transform: translateX(-50%);
+  background: color-mix(in oklch, var(--cs-accent-cool) 28%, transparent);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 260ms ease, background 240ms ease, box-shadow 240ms ease;
+  pointer-events: none;
+}
+
+.sb-seq-activation.sb-visible {
+  opacity: 1;
+}
+
+.sb-seq-activation-response {
+  background: color-mix(in oklch, var(--cs-ink-3) 40%, transparent);
+  border-color: color-mix(in oklch, var(--cs-ink-3) 70%, transparent);
+}
+
+.sb-seq-activation-self {
+  background: color-mix(in oklch, var(--cs-accent-cool) 40%, transparent);
+  border-color: color-mix(in oklch, var(--cs-accent-cool) 75%, transparent);
+}
+
+.sb-seq-activation.sb-seq-pulse {
+  background: color-mix(in oklch, var(--cs-accent-warm) 55%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in oklch, var(--cs-accent-warm) 45%, transparent);
+}
+
+.sb-seq-note {
+  position: absolute;
+  transform: translate(-50%, 0);
+  padding: var(--cs-s-2) var(--cs-s-3);
+  background: color-mix(in oklch, var(--cs-accent-warn) 15%, transparent);
+  border: 1px solid color-mix(in oklch, var(--cs-accent-warn) 50%, transparent);
+  border-radius: var(--cs-r-s);
+  color: var(--cs-accent-warn);
+  font-size: var(--cs-fs-6);
+  max-width: 320px;
+  opacity: 0;
+  transition: opacity 260ms ease;
+  pointer-events: none;
+}
+
+.sb-seq-note.sb-visible {
+  opacity: 1;
+}
+
+.sb-seq-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+/* ---------- Pipeline panel ---------- */
+
+.sb-pipeline {
+  position: relative;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.sb-pipeline-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  flex-wrap: wrap;
+}
+
+.sb-pipeline-sep {
+  width: 1px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.12);
+  margin: 0 4px;
+}
+
+.sb-pipeline-url {
+  flex: 1;
+  min-width: 240px;
+  font: inherit;
+  color: inherit;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.sb-pipeline-url:focus {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.6);
+}
+
+.sb-pipeline-versions {
+  font: inherit;
+  color: inherit;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 6px 8px;
+  border-radius: 8px;
+  max-width: 260px;
+}
+
+.sb-pipeline-versions:disabled {
+  opacity: 0.5;
+}
+
+.sb-pipeline-tab-active {
+  background: rgba(96, 165, 250, 0.2) !important;
+  border-color: rgba(96, 165, 250, 0.6) !important;
+}
+
+.sb-pipeline-error {
+  margin: 0 20px 10px;
+  padding: 8px 12px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  border-radius: 8px;
+  font-size: var(--cs-fs-4);
+}
+
+/* The drawer overlays the stage — it doesn't reflow the page. */
+.sb-pipeline-drawer {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: 14px 20px 18px;
+  background: rgba(11, 16, 32, 0.96);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  z-index: 20;
+  max-height: calc(100vh - 160px);
+  overflow: auto;
+}
+
+.sb-pipeline-settings {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: var(--cs-fs-3);
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+.sb-pipeline-settings label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.75;
+}
+
+.sb-pipeline-settings select,
+.sb-pipeline-settings input[type='range'] {
+  font: inherit;
+  color: inherit;
+}
+
+.sb-pipeline-settings select {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 4px 6px;
+}
+
+/* ---------- JsonView ---------- */
+
+.sb-json-view {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.sb-json-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sb-json-label {
+  font-size: var(--cs-fs-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.6;
+}
+
+.sb-json-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.sb-json-actions button {
+  padding: 4px 10px;
+  font-size: var(--cs-fs-3);
+}
+
+.sb-json-pre,
+.sb-json-editor {
+  margin: 0;
+  padding: 10px 12px;
+  background: #0b1020;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', 'Fira Code', Menlo, Consolas, monospace;
+  font-size: var(--cs-fs-3);
+  line-height: 1.5;
+  color: #cbd5e1;
+  overflow: auto;
+  white-space: pre;
+}
+
+.sb-json-editor {
+  width: 100%;
+  resize: vertical;
+  white-space: pre;
+  tab-size: 2;
+}
+
+.sb-json-editor:focus {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.6);
+}
+
+.sb-json-error {
+  padding: 6px 10px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  border-radius: 6px;
+  font-size: var(--cs-fs-3);
+}
+
+/* ── Triage Modal ───────────────────────────────────────────
+   Light brand palette — matches the generate flow. Tokens are
+   locally declared on the backdrop so the modal is self-contained
+   whether it opens over the light /generate flow or the dark
+   internal exerciser at /. */
+
+.sb-modal-backdrop {
+  /* Local tokens (see .sb-generate for the canonical set). */
+  --cs-bg-alt:         #e9f2fb;
+  --cs-surface:        #ffffff;
+  --cs-ink:            #0e2235;
+  --cs-ink-soft:       #3e5572;
+  --cs-ink-muted:      #7a8ba2;
+  --cs-brand-deep:     #1d7ab7;
+  --cs-brand-sky:      #6fc4eb;
+  --cs-brand-deep-ink: #155a88;
+  --cs-brand-soft:     #d9ecf8;
+  --cs-border:         rgba(14, 34, 53, 0.08);
+  --cs-font-sans:      "Inter", "Geist", ui-sans-serif, system-ui, -apple-system,
+                        "Segoe UI", sans-serif;
+
+  position: fixed;
+  inset: 0;
+  background: rgba(14, 34, 53, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+  font-family: var(--cs-font-sans);
+}
+
+.sb-modal {
+  background: var(--cs-surface);
+  color: var(--cs-ink);
+  border: 1px solid var(--cs-border);
+  border-radius: 20px;
+  width: min(780px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  box-shadow: 0 30px 60px -20px rgba(14, 34, 53, 0.35);
+  font-size: var(--cs-fs-5);
+}
+
+.sb-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--cs-border);
+}
+
+.sb-modal-header h2 {
+  margin: 0;
+  font-size: var(--cs-fs-9);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--cs-ink);
+}
+
+.sb-modal-close {
+  background: none;
+  border: none;
+  color: var(--cs-ink-muted);
+  font-size: var(--cs-fs-11);
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 8px;
+  border-radius: 999px;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.sb-modal-close:hover {
+  color: var(--cs-ink);
+  background: var(--cs-bg-alt);
+}
+
+.sb-modal-summary {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--cs-border);
+  background: var(--cs-bg-alt);
+}
+
+.sb-modal-summary-row {
+  margin-bottom: 6px;
+  color: var(--cs-ink);
+}
+
+.sb-modal-summary-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--cs-ink-soft);
+  font-size: var(--cs-fs-4);
+}
+
+.sb-modal-highlights {
+  margin: 10px 0 0;
+  padding-left: 20px;
+  color: var(--cs-ink-soft);
+  font-size: var(--cs-fs-4);
+}
+
+.sb-modal-notes {
+  margin-top: 8px;
+  color: #9a6a00;
+  background: #fff7e0;
+  border: 1px solid rgba(234, 179, 8, 0.2);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: var(--cs-fs-4);
+}
+
+.sb-modal-section {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--cs-border);
+}
+
+.sb-modal-section-label {
+  font-size: var(--cs-fs-3);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--cs-brand-deep);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.sb-modal-modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.sb-modal-mode {
+  background: var(--cs-surface);
+  border: 1px solid var(--cs-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: left;
+  color: var(--cs-ink);
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 120ms ease, background 120ms ease,
+    transform 120ms ease, box-shadow 120ms ease;
+}
+
+.sb-modal-mode:hover {
+  border-color: var(--cs-brand-sky);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px -16px rgba(14, 34, 53, 0.25);
+}
+
+.sb-modal-mode-selected {
+  border-color: var(--cs-brand-deep);
+  background: var(--cs-brand-soft);
+  box-shadow: 0 0 0 3px rgba(29, 122, 183, 0.12);
+}
+
+.sb-modal-mode-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: var(--cs-fs-5);
+  color: var(--cs-ink);
+}
+
+.sb-modal-mode-hint {
+  color: var(--cs-ink-soft);
+  font-size: var(--cs-fs-4);
+  line-height: 1.45;
+}
+
+.sb-modal-subsystems {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 280px;
+  overflow: auto;
+}
+
+.sb-modal-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 2px;
+}
+
+.sb-modal-slider input[type='range'] {
+  width: 100%;
+  accent-color: var(--cs-brand-deep);
+}
+
+.sb-modal-slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--cs-fs-2);
+  color: var(--cs-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sb-modal-subsystem {
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--cs-surface);
+  border: 1px solid var(--cs-border);
+  border-radius: 10px;
+  cursor: pointer;
+  align-items: flex-start;
+  transition: border-color 120ms ease, background 120ms ease;
+}
+
+.sb-modal-subsystem:hover {
+  border-color: var(--cs-brand-sky);
+}
+
+.sb-modal-subsystem-picked {
+  border-color: var(--cs-brand-deep);
+  background: var(--cs-brand-soft);
+}
+
+.sb-modal-subsystem input[type='checkbox'] {
+  accent-color: var(--cs-brand-deep);
+  margin-top: 2px;
+}
+
+.sb-modal-subsystem-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.sb-modal-subsystem-name {
+  font-weight: 600;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--cs-ink);
+}
+
+.sb-modal-subsystem-weight {
+  font-size: var(--cs-fs-2);
+  color: var(--cs-ink-muted);
+  font-weight: 500;
+}
+
+.sb-modal-subsystem-purpose {
+  color: var(--cs-ink-soft);
+  font-size: var(--cs-fs-4);
+  margin-top: 4px;
+  line-height: 1.45;
+}
+
+.sb-modal-subsystem-paths {
+  color: var(--cs-ink-muted);
+  font-size: var(--cs-fs-3);
+  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  margin-top: 4px;
+}
+
+.sb-modal-select {
+  width: 100%;
+  background: var(--cs-bg-alt);
+  border: 1px solid var(--cs-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: var(--cs-ink);
+  font-size: var(--cs-fs-5);
+  font-family: inherit;
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.sb-modal-select:focus {
+  border-color: var(--cs-brand-deep);
+  box-shadow: 0 0 0 3px rgba(29, 122, 183, 0.12);
+}
+
+.sb-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 18px 24px;
+}
+
+.sb-modal-footer button {
+  background: transparent;
+  border: 1px solid var(--cs-border);
+  color: var(--cs-ink);
+  padding: 10px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: var(--cs-fs-5);
+  font-weight: 500;
+  font-family: inherit;
+  transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+}
+
+.sb-modal-footer button:hover:not(:disabled) {
+  border-color: var(--cs-brand-sky);
+  color: var(--cs-brand-deep);
+}
+
+.sb-modal-footer button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sb-modal-primary {
+  background: var(--cs-brand-deep) !important;
+  border-color: var(--cs-brand-deep) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  box-shadow: 0 10px 30px -14px rgba(29, 122, 183, 0.55);
+}
+
+.sb-modal-primary:hover:not(:disabled) {
+  background: var(--cs-brand-deep-ink) !important;
+  border-color: var(--cs-brand-deep-ink) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 36px -14px rgba(29, 122, 183, 0.7);
+}
+
+/* Share modal: clickable URL display + small status hint. The URL is a
+   <button> for keyboard access; we strip native button chrome and render
+   it as a wrappable monospace pill the user clicks to copy. */
+.sb-share-link {
+  display: block;
+  width: 100%;
+  margin: 8px 24px 0;
+  padding: 12px 14px;
+  background: var(--cs-paper);
+  border: 1px solid var(--cs-line);
+  border-radius: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--cs-fs-5);
+  color: var(--cs-ink);
+  text-align: left;
+  word-break: break-all;
+  cursor: pointer;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+.sb-share-link:hover {
+  border-color: var(--cs-brand-deep);
+  box-shadow: 0 6px 18px -10px rgba(29, 122, 183, 0.35);
+}
+.sb-share-hint {
+  margin: 6px 24px 0;
+  font-size: var(--cs-fs-6);
+  color: var(--cs-ink-muted);
+}
+.sb-modal-error {
+  margin: 0 24px;
+  padding: 10px 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #b91c1c;
+  font-size: var(--cs-fs-5);
+}
+
+/* Pre-analysis estimate strip — quiet confirmation, not a pitch. */
+.sb-modal-estimate {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: baseline;
+  padding: 16px 24px 0;
+  font-size: var(--cs-fs-5);
+  color: var(--cs-ink-soft);
+}
+
+.sb-modal-estimate-main { font-weight: 600; color: var(--cs-ink); }
+.sb-modal-estimate-usd { margin-left: 6px; color: var(--cs-ink-muted); font-weight: 400; }
+.sb-modal-estimate-balance { color: var(--cs-ink-soft); }
+.sb-modal-estimate-low { color: #b91c1c; font-weight: 600; }
+.sb-modal-estimate-muted { color: var(--cs-ink-muted); font-style: italic; }
+.sb-modal-estimate-loading { color: var(--cs-ink-muted); font-style: italic; }
+.sb-modal-estimate-reasoning {
+  flex-basis: 100%;
+  color: var(--cs-ink-muted);
+  font-size: var(--cs-fs-3);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.01em;
+}
+.sb-modal-estimate-error { color: #b91c1c; font-size: var(--cs-fs-4); }
+
+/* ---------- flag note modal ---------- */
+
+.sb-flag-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.sb-flag-modal {
+  background: #141b2e;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+  padding: 20px 22px;
+  width: min(520px, 92vw);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sb-flag-title {
+  font-size: var(--cs-fs-7);
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.sb-flag-context {
+  font-size: var(--cs-fs-3);
+  color: #94a3b8;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  word-break: break-all;
+}
+
+.sb-flag-key {
+  color: #64748b;
+  margin-right: 6px;
+}
+
+.sb-flag-textarea {
+  width: 100%;
+  background: #0f172a;
+  color: #e6e8ee;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: var(--cs-fs-5);
+  resize: vertical;
+}
+
+.sb-flag-textarea:focus {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.6);
+}
+
+.sb-flag-error {
+  color: #fca5a5;
+  font-size: var(--cs-fs-3);
+}
+
+.sb-flag-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.sb-flag-suspect {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--cs-fs-3);
+  color: #94a3b8;
+}
+
+.sb-flag-suspect-label {
+  color: #64748b;
+  margin-right: 2px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.sb-flag-suspect-pill {
+  background: rgba(15, 23, 42, 0.6);
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: var(--cs-fs-3);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.sb-flag-suspect-pill:hover {
+  border-color: rgba(96, 165, 250, 0.5);
+}
+
+.sb-flag-suspect-pill-on {
+  background: rgba(96, 165, 250, 0.18);
+  color: #e6e8ee;
+  border-color: rgba(96, 165, 250, 0.8);
+}
+
+.sb-flag-suspect-hint {
+  color: #64748b;
+  font-size: var(--cs-fs-2);
+  font-style: italic;
+  margin-left: 4px;
+}
+
+/* ---------- step-journey template ----------
+ * Numbered-circle stepper. The circle digit reuses the cs-numlist-n
+ * mono style; the connector + lit border use --cs-accent-cool (via
+ * --sb-step-active). Warm accent is reserved for the emphasize pulse.
+ */
+
+.sb-step-journey {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--cs-s-6) var(--cs-s-5);
+  font-family: var(--cs-font-ui);
+  color: var(--cs-ink-1);
+}
+
+.sb-step-journey-title {
+  margin: 0 0 var(--cs-s-7);
+  text-align: center;
+}
+
+.sb-step-journey-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  max-width: min(1500px, var(--sb-stage-w-max));
+  position: relative;
+}
+
+.sb-step-journey-connector {
+  flex: 1;
+  height: 3px;
+  background: var(--cs-ink-4);
+  align-self: center;
+  margin-top: 32px; /* vertically center with the 64px circle */
+  opacity: 0.5;
+  transition: background var(--sb-step-reveal-ms, 400ms) ease,
+              opacity var(--sb-step-reveal-ms, 400ms) ease;
+}
+
+.sb-step-journey-connector.sb-visible {
+  background: var(--sb-step-active, var(--cs-accent-cool));
+  opacity: 1;
+}
+
+.sb-step-journey-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+  max-width: 180px;
+  opacity: 0.25;
+  transform: translateY(8px);
+  transition: opacity var(--sb-step-reveal-ms, 500ms) ease,
+              transform var(--sb-step-reveal-ms, 500ms) ease;
+}
+
+.sb-step-journey-card.sb-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sb-step-journey-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 3px solid var(--cs-ink-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-7);
+  letter-spacing: 0.08em;
+  color: var(--cs-ink-3);
+  background: var(--cs-glass-sunken-bg);
+  margin-bottom: var(--cs-s-3);
+  transition: border-color var(--sb-step-reveal-ms, 400ms) ease,
+              color var(--sb-step-reveal-ms, 400ms) ease,
+              box-shadow 300ms ease;
+}
+
+.sb-step-journey-card.sb-visible .sb-step-journey-circle {
+  border-color: var(--sb-step-active, var(--cs-accent-cool));
+  color: var(--cs-ink-1);
+}
+
+.sb-step-journey-circle.sb-emphasize {
+  border-color: var(--cs-accent-warm);
+  color: var(--cs-accent-warm);
+  box-shadow: 0 0 20px color-mix(in oklch, var(--cs-accent-warm) 60%, transparent);
+}
+
+.sb-step-journey-label {
+  font-size: var(--cs-fs-7);
+  font-weight: 600;
+  color: var(--cs-ink-1);
+  text-align: center;
+  line-height: 1.3;
+  margin-bottom: var(--cs-s-2);
+}
+
+.sb-step-journey-detail {
+  font-size: var(--cs-fs-5);
+  color: var(--cs-ink-3);
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* ---------- data-pipeline template ----------
+ * Each card surface comes from .cs-plate--sunken. Only layout,
+ * reveal, and the warm-highlight / warm-emphasize treatment live here.
+ */
+
+.sb-pipeline-wrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: safe center;
+  padding: var(--cs-s-5);
+  font-family: var(--cs-font-ui);
+  color: var(--cs-ink-1);
+  overflow-y: auto;
+}
+
+.sb-pipeline-title {
+  margin: 0 0 var(--cs-s-5);
+  text-align: center;
+}
+
+.sb-pipeline-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  max-width: min(800px, var(--sb-stage-w-max));
+}
+
+.sb-pipeline-card {
+  width: 100%;
+  padding: var(--cs-s-4) var(--cs-s-5);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 500ms ease, transform 500ms ease, box-shadow 300ms ease;
+}
+
+.sb-pipeline-card.sb-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sb-pipeline-card.sb-emphasize {
+  box-shadow:
+    0 0 0 2px var(--cs-accent-warm),
+    0 1px 0 hsl(220 30% 100% / 0.03) inset,
+    0 0 0 1px hsl(220 30% 0% / 0.15) inset;
+}
+
+.sb-pipeline-card-header {
+  display: block;
+  margin-bottom: var(--cs-s-2);
+  overflow-wrap: break-word;
+}
+
+.sb-pipeline-card-header.sb-with-sub {
+  margin-bottom: 2px;
+}
+
+.sb-pipeline-card-sub {
+  font-size: var(--cs-fs-8);
+  font-weight: 500;
+  color: var(--cs-ink-1);
+  margin-bottom: var(--cs-s-2);
+  overflow-wrap: break-word;
+}
+
+.sb-pipeline-arrow {
+  font-size: var(--cs-fs-11);
+  color: var(--cs-ink-3);
+  padding: var(--cs-s-2) 0;
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.sb-pipeline-arrow.sb-visible {
+  opacity: 1;
+}
+
+.sb-pipeline-block {
+  font-size: var(--cs-fs-7);
+  line-height: 1.6;
+  font-family: var(--cs-font-mono);
+}
+
+.sb-pipeline-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--cs-fs-6);
+  table-layout: fixed;
+}
+
+.sb-pipeline-th {
+  text-align: left;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--cs-glass-border);
+  color: var(--cs-ink-3);
+  font-weight: 500;
+  font-size: var(--cs-fs-5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  overflow-wrap: break-word;
+}
+
+.sb-pipeline-td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--cs-glass-sunken-border);
+  color: var(--cs-ink-2);
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.sb-pipeline-td.sb-highlight {
+  color: var(--cs-accent-warm);
+  font-weight: 700;
+}
+
+.sb-pipeline-value-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--cs-s-3);
+  padding: var(--cs-s-2) 0;
+  font-size: var(--cs-fs-12);
+  font-weight: 600;
+  color: var(--cs-ink-1);
+  overflow-wrap: anywhere;
+}
+
+.sb-pipeline-value-row.sb-highlight {
+  color: var(--cs-accent-warm);
+  font-weight: 700;
+}
+
+.sb-pipeline-value-key {
+  color: var(--cs-ink-3);
+  font-size: var(--cs-fs-7);
+  align-self: center;
+}
+
+.sb-pipeline-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--cs-s-3);
+  padding: 3px 0;
+  border-bottom: 1px solid var(--cs-glass-sunken-border);
+  color: var(--cs-ink-2);
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.sb-pipeline-breakdown-row.sb-highlight {
+  color: var(--cs-accent-warm);
+  font-weight: 700;
+}
+
+/* ---------- scorecard template ----------
+ * Overall grade uses the .cs-grade primitive (tier-mapped). Each row card
+ * uses .cs-plate for its surface and .cs-severity for the score bar. Only
+ * layout, reveal, and the left-accent tier stripe live here.
+ */
+
+.sb-scorecard-wrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--cs-s-6) var(--cs-s-5);
+  font-family: var(--cs-font-ui);
+  color: var(--cs-ink-1);
+}
+
+.sb-scorecard-title {
+  margin: 0 0 var(--cs-s-4);
+  text-align: center;
+}
+
+.sb-scorecard-badge {
+  margin-bottom: var(--cs-s-6);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+
+.sb-scorecard-badge.sb-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.sb-scorecard-grid {
+  display: grid;
+  gap: var(--cs-s-4);
+  width: 100%;
+  max-width: min(1100px, var(--sb-stage-w-max));
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.sb-scorecard-grid.sb-cols-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.sb-scorecard-card {
+  padding: var(--cs-s-4) var(--cs-s-5);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 400ms ease, transform 400ms ease, box-shadow 300ms ease;
+}
+
+/* Tier stripe — left accent bar that signals the grade tier without using
+ * the warm budget (warm is reserved for the emphasize pulse). */
+.sb-scorecard-card::before {
+  width: 3px !important;
+  height: 100% !important;
+  inset: 0 auto 0 0 !important;
+  background: var(--cs-ink-4) !important;
+  opacity: 1 !important;
+}
+
+.sb-scorecard-card--good::before { background: var(--cs-accent-ok) !important; }
+.sb-scorecard-card--mid::before  { background: var(--cs-accent-warm) !important; }
+.sb-scorecard-card--poor::before { background: var(--cs-accent-warn) !important; }
+
+.sb-scorecard-card.sb-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sb-scorecard-card.sb-emphasize {
+  box-shadow:
+    0 0 0 2px var(--cs-accent-warm),
+    var(--cs-shadow-plate);
+}
+
+.sb-scorecard-header {
+  display: flex;
+  align-items: center;
+  gap: var(--cs-s-3);
+  margin-bottom: var(--cs-s-2);
+}
+
+.sb-scorecard-grade {
+  line-height: 1;
+}
+
+.sb-scorecard-label {
+  font-size: var(--cs-fs-8);
+  font-weight: 600;
+  color: var(--cs-ink-1);
+}
+
+.sb-scorecard-bar {
+  display: block;
+  width: 100%;
+  margin-bottom: var(--cs-s-2);
+}
+
+.sb-scorecard-note {
+  font-size: var(--cs-fs-6);
+  color: var(--cs-ink-3);
+  line-height: 1.4;
+}
+
+/* ---------- entity-map template ----------
+ * Outer container is a .cs-plate; each entity card is a nested
+ * .cs-plate--sunken. Surface chrome (bg, border, radius, shadow) comes
+ * from those primitives. Only layout, the producer-driven accent stripe,
+ * reveal, and the warm-ring emphasize treatment live here.
+ */
+
+.sb-entity-map-wrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--cs-s-5);
+  font-family: var(--cs-font-ui);
+  color: var(--cs-ink-1);
+}
+
+.sb-entity-map-title {
+  margin: 0 0 var(--cs-s-5);
+  text-align: center;
+}
+
+.sb-entity-map-container {
+  position: relative;
+  width: 100%;
+  max-width: min(1400px, var(--sb-stage-w-max));
+  flex: 1;
+  padding: var(--cs-s-6);
+}
+
+.sb-entity-map-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--sb-entity-cols, 3), 1fr);
+  /* When the template emits explicit row/col on entities it sets
+   * --sb-entity-rows; otherwise auto rows pack by content. */
+  grid-template-rows: repeat(var(--sb-entity-rows, auto), auto);
+  justify-items: center;
+  gap: 56px 48px;
+  position: relative;
+  z-index: 2;
+}
+
+.sb-entity-map-card {
+  padding: var(--cs-s-4) var(--cs-s-5);
+  width: fit-content;
+  max-width: 280px;
+  min-width: 160px;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 400ms ease, transform 400ms ease, box-shadow 300ms ease;
+}
+
+/* Producer-provided accent color reads as a small left stripe on the
+ * card, overriding the default plate specular. The stripe replaces the
+ * ::before highlight rather than stacking another pseudo-element. */
+.sb-entity-map-card::before {
+  width: 3px !important;
+  height: 100% !important;
+  inset: 0 auto 0 0 !important;
+  background: var(--sb-entity-color, var(--cs-accent-cool)) !important;
+  opacity: 1 !important;
+}
+
+.sb-entity-map-card.sb-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.sb-entity-map-card.sb-emphasize {
+  box-shadow:
+    0 0 0 2px var(--cs-accent-warm),
+    0 1px 0 hsl(220 30% 100% / 0.03) inset,
+    0 0 0 1px hsl(220 30% 0% / 0.15) inset;
+}
+
+.sb-entity-map-header {
+  display: flex;
+  align-items: center;
+  gap: var(--cs-s-2);
+  margin-bottom: 0;
+}
+
+.sb-entity-map-header.sb-with-fields {
+  margin-bottom: var(--cs-s-2);
+}
+
+.sb-entity-map-label {
+  font-family: var(--cs-font-ui);
+  font-weight: 600;
+  font-size: var(--cs-fs-9);
+  line-height: 1.2;
+  color: var(--cs-ink-1);
+  letter-spacing: -0.005em;
+}
+
+.sb-entity-map-fields {
+  font-size: var(--cs-fs-4);
+  color: var(--cs-ink-3);
+  line-height: 1.5;
+  font-family: var(--cs-font-mono);
+  white-space: normal;
+  word-break: break-word;
+  padding-left: 0;
+}
+
+.sb-entity-map-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* ==========================================================================
+   Generate flow — mobile-first authoring surface at /generate.
+   Light brand palette (matches apps/server/app/globals.css). The stage
+   itself stays dark because templates are designed against dark.
+   ========================================================================== */
+
+.sb-generate {
+  /* Local brand tokens — duplicated from globals.css so the player is
+     self-contained when mounted anywhere (Vite dev at :5173 has no
+     globals.css). Same values; kept in sync by hand. */
+  --cs-bg:             #f5faff;
+  --cs-bg-alt:         #e9f2fb;
+  --cs-surface:        #ffffff;
+  --cs-ink:            #0e2235;
+  --cs-ink-soft:       #3e5572;
+  --cs-ink-muted:      #7a8ba2;
+  --cs-brand-deep:     #1d7ab7;
+  --cs-brand-sky:      #6fc4eb;
+  --cs-brand-deep-ink: #155a88;
+  --cs-brand-soft:     #d9ecf8;
+  --cs-border:         rgba(14, 34, 53, 0.08);
+  --cs-danger:         #b91c1c;
+  --cs-danger-soft:    #fee2e2;
+  --cs-radius-lg:      20px;
+  --cs-radius-md:      12px;
+  --cs-font-sans:      "Inter", "Geist", ui-sans-serif, system-ui, -apple-system,
+                        "Segoe UI", sans-serif;
+
+  color-scheme: light;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--cs-bg-alt);
+  color: var(--cs-ink);
+  font-family: var(--cs-font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  padding-bottom: max(env(safe-area-inset-bottom), 16px);
+}
+
+.sb-generate-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  padding-top: max(env(safe-area-inset-top), 14px);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--cs-border);
+}
+
+.sb-generate-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--cs-ink);
+  text-decoration: none;
+}
+
+.sb-generate-logo {
+  height: 40px;
+  width: auto;
+  border-radius: 0;
+  object-fit: contain;
+  display: block;
+}
+
+.sb-generate-header-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--cs-fs-5);
+}
+
+.sb-generate-main {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 1fr; /* single column on mobile */
+  gap: 24px;
+  align-items: flex-start;
+  justify-items: center;
+  padding: 32px 20px;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.sb-generate-flow-column {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+}
+
+.sb-generate-side-column {
+  width: 100%;
+  max-width: 560px;
+}
+
+/* --- Blog companion panel (right rail) --- */
+
+.sb-generate-blog {
+  background: var(--cs-surface);
+  border: 1px solid var(--cs-border);
+  border-radius: var(--cs-radius-lg);
+  padding: 28px 24px;
+  box-shadow: 0 30px 60px -40px rgba(14, 34, 53, 0.28);
+}
+
+.sb-generate-blog-eyebrow {
+  font-size: var(--cs-fs-3);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cs-brand-deep);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.sb-generate-blog-title {
+  font-size: var(--cs-fs-10);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--cs-ink);
+  margin: 0 0 8px;
+  line-height: 1.15;
+}
+
+.sb-generate-blog-hint {
+  margin: 0 0 20px;
+  color: var(--cs-ink-soft);
+  font-size: var(--cs-fs-5);
+  line-height: 1.55;
+}
+
+.sb-generate-blog-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sb-generate-blog-item {
+  border-top: 1px dashed var(--cs-border);
+}
+
+.sb-generate-blog-item:first-child {
+  border-top: none;
+}
+
+.sb-generate-blog-link {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'tag title'
+    '.   excerpt';
+  column-gap: 12px;
+  row-gap: 4px;
+  padding: 14px 4px;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 10px;
+  transition: background 120ms ease, transform 120ms ease;
+}
+
+.sb-generate-blog-link:hover {
+  background: var(--cs-bg-alt);
+}
+
+.sb-generate-blog-tag {
+  grid-area: tag;
+  align-self: center;
+  display: inline-block;
+  font-size: var(--cs-fs-1);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.sb-generate-blog-tag-research {
+  background: var(--cs-brand-soft);
+  color: var(--cs-brand-deep-ink);
+}
+
+.sb-generate-blog-tag-walkthrough {
+  background: #e8fbf1;
+  color: #145c3b;
+}
+
+.sb-generate-blog-item-title {
+  grid-area: title;
+  font-size: var(--cs-fs-6);
+  font-weight: 600;
+  color: var(--cs-ink);
+  line-height: 1.35;
+}
+
+.sb-generate-blog-link:hover .sb-generate-blog-item-title {
+  color: var(--cs-brand-deep);
+}
+
+.sb-generate-blog-item-excerpt {
+  grid-area: excerpt;
+  color: var(--cs-ink-soft);
+  font-size: var(--cs-fs-4);
+  line-height: 1.5;
+}
+
+/* --- Recent runs card (state 1, under the URL card) ------------------
+   A second card in the left column listing the user's saved scripts.
+   Two-line rows: owner/repo on top, label · relative-date on the
+   bottom. Play + Share actions on the right. Whole-row click plays. */
+
+.sb-generate-runs {
+  position: relative;
+  padding: 24px 24px 18px;
+}
+
+.sb-generate-runs-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.sb-generate-runs-title {
+  font-size: var(--cs-fs-6);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--cs-ink);
+  margin: 0;
+}
+
+.sb-generate-runs-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--cs-brand-soft);
+  color: var(--cs-brand-deep-ink);
+  font-size: var(--cs-fs-2);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.sb-generate-runs-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sb-generate-runs-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--cs-border);
+}
+
+/* First row gets a dashed divider above it to visually separate from
+   the header; subsequent rows keep the solid border-top. */
+.sb-generate-runs-row:first-child {
+  border-top: 1px dashed var(--cs-border);
+  padding-top: 14px;
+  margin-top: 4px;
+}
+
+/* Whole-left-side is a click target that plays the script. Strip button
+   defaults so it reads as a row, not a button. */
+.sb-generate-runs-row-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: inherit;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: color 120ms ease;
+}
+
+.sb-generate-runs-row-main:hover .sb-generate-runs-repo,
+.sb-generate-runs-row-main:focus-visible .sb-generate-runs-repo {
+  color: var(--cs-brand-deep);
+}
+
+.sb-generate-runs-row-main:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(29, 122, 183, 0.18);
+}
+
+.sb-generate-runs-repo {
+  font-size: var(--cs-fs-6);
+  font-weight: 600;
+  color: var(--cs-ink);
+  letter-spacing: -0.005em;
+  line-height: 1.25;
+  /* Truncate a long owner/repo rather than wrap. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 120ms ease;
+}
+
+.sb-generate-runs-title-line {
+  font-size: var(--cs-fs-5);
+  color: var(--cs-ink);
+  line-height: 1.3;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sb-generate-runs-meta {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: var(--cs-fs-4);
+  color: var(--cs-ink-soft);
+  line-height: 1.35;
+  min-width: 0;
+}
+
+.sb-generate-runs-label {
+  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  font-size: var(--cs-fs-3);
+  color: var(--cs-ink-soft);
+  letter-spacing: 0.01em;
+  /* Prevent very long labels from pushing the date off-row. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 240px;
+}
+
+.sb-generate-runs-dot {
+  color: var(--cs-ink-muted);
+  opacity: 0.6;
+}
+
+.sb-generate-runs-date {
+  color: var(--cs-ink-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.sb-generate-runs-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.sb-generate-runs-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--cs-brand-deep);
+  font-size: var(--cs-fs-4);
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.sb-generate-runs-action:hover {
+  background: var(--cs-brand-soft);
+  color: var(--cs-brand-deep-ink);
+}
+
+.sb-generate-runs-action:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(29, 122, 183, 0.18);
+}
+
+.sb-generate-runs-action-muted {
+  color: var(--cs-ink-soft);
+}
+
+.sb-generate-runs-action-muted:hover {
+  background: var(--cs-bg-alt);
+  color: var(--cs-ink);
+}
+
+.sb-generate-runs-more {
+  display: block;
+  padding: 12px 0 2px;
+  margin-top: 4px;
+  border-top: 1px dashed var(--cs-border);
+  color: var(--cs-brand-deep);
+  font-size: var(--cs-fs-4);
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+}
+
+.sb-generate-runs-more:hover {
+  color: var(--cs-brand-deep-ink);
+}
+
+/* /runs page — same row visuals as the home-page card, but lifted out
+   of the narrow flow column so the list spans the page width. */
+.sb-generate-runs.runs-page {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.sb-generate-runs.runs-page .sb-generate-runs-title {
+  font-size: var(--cs-fs-8);
+}
+
+/* Tiny floating confirmation after Share click. Positioned inside the
+   card so it doesn't jump to the viewport edge. */
+.sb-generate-runs-toast {
+  position: absolute;
+  right: 20px;
+  bottom: 14px;
+  padding: 6px 12px;
+  background: var(--cs-ink);
+  color: #fff;
+  font-size: var(--cs-fs-3);
+  border-radius: 999px;
+  box-shadow: 0 10px 30px -12px rgba(14, 34, 53, 0.45);
+  animation: sb-generate-runs-toast-in 180ms ease-out;
+}
+
+@keyframes sb-generate-runs-toast-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Skeleton rows while listScripts is in flight. */
+.sb-generate-runs-skeleton {
+  display: block;
+  padding: 14px 0;
+}
+
+.sb-generate-runs-skel-line {
+  height: 12px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--cs-bg-alt) 0%,
+    rgba(29, 122, 183, 0.08) 50%,
+    var(--cs-bg-alt) 100%
+  );
+  background-size: 200% 100%;
+  animation: sb-generate-runs-shimmer 1.4s ease-in-out infinite;
+}
+
+.sb-generate-runs-skel-line-a { width: 45%; margin-bottom: 8px; }
+.sb-generate-runs-skel-line-b { width: 70%; height: 10px; }
+
+@keyframes sb-generate-runs-shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-generate-runs-skel-line {
+    animation: none;
+    background: var(--cs-bg-alt);
+  }
+  .sb-generate-runs-toast {
+    animation: none;
+  }
+}
+
+/* Mobile: actions stack below the main row on narrow screens so the
+   label + date still fit on one line. */
+@media (max-width: 520px) {
+  .sb-generate-runs-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .sb-generate-runs-actions {
+    justify-content: flex-end;
+  }
+}
+
+/* --- "Download latest video" banner on /runs ------------------------
+   One-per-user pointer at the user's most recent successful MP4 render.
+   See VIDEO-EXPORT-PLAN.md 2026-05-08 entry. */
+
+.sb-runs-latest-render {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  background: var(--cs-brand-soft);
+  border: 1px solid var(--cs-brand-sky);
+  border-radius: 10px;
+}
+
+.sb-runs-latest-render-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.sb-runs-latest-render-title {
+  font-size: var(--cs-fs-5);
+  font-weight: 600;
+  color: var(--cs-brand-deep-ink);
+  letter-spacing: -0.005em;
+}
+
+.sb-runs-latest-render-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--cs-fs-4);
+  color: var(--cs-ink-soft);
+  min-width: 0;
+}
+
+.sb-runs-latest-render-script {
+  font-weight: 500;
+  color: var(--cs-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 22ch;
+}
+
+.sb-runs-latest-render-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #fff;
+  color: var(--cs-brand-deep-ink);
+  border: 1px solid var(--cs-brand-sky);
+  border-radius: 8px;
+  font-size: var(--cs-fs-4);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  white-space: nowrap;
+}
+
+.sb-runs-latest-render-cta:hover {
+  background: var(--cs-brand-deep);
+  color: #fff;
+  border-color: var(--cs-brand-deep);
+}
+
+.sb-runs-latest-render-cta:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(29, 122, 183, 0.25);
+}
+
+.sb-runs-latest-render-cta-disabled {
+  background: var(--cs-bg-alt);
+  color: var(--cs-ink-soft);
+  cursor: default;
+}
+
+@media (max-width: 520px) {
+  .sb-runs-latest-render {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .sb-runs-latest-render-cta {
+    justify-content: center;
+  }
+}
+
+.sb-generate-card {
+  width: 100%;
+  max-width: 560px;
+  background: var(--cs-surface);
+  border: 1px solid var(--cs-border);
+  border-radius: var(--cs-radius-lg);
+  padding: 32px 28px;
+  box-shadow: 0 30px 60px -40px rgba(14, 34, 53, 0.28);
+}
+
+.sb-generate-card-eyebrow {
+  font-size: var(--cs-fs-4);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cs-brand-deep);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.sb-generate-card-title {
+  font-size: var(--cs-fs-12);
+  margin: 0 0 8px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--cs-ink);
+}
+
+.sb-generate-card-hint {
+  margin: 0 0 22px;
+  color: var(--cs-ink-soft);
+  font-size: var(--cs-fs-6);
+  line-height: 1.55;
+}
+
+.sb-generate-url-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sb-generate-input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: var(--cs-radius-md);
+  background: var(--cs-bg);
+  color: var(--cs-ink);
+  border: 1px solid var(--cs-border);
+  font-size: var(--cs-fs-7); /* token = 16px; >= 16 avoids iOS zoom on focus */
+  font-family: inherit;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.sb-generate-input:focus {
+  border-color: var(--cs-brand-deep);
+  box-shadow: 0 0 0 3px rgba(29, 122, 183, 0.12);
+}
+
+.sb-generate-primary {
+  width: 100%;
+  padding: 14px 22px;
+  border-radius: 999px;
+  background: var(--cs-brand-deep);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  font-size: var(--cs-fs-6);
+  font-family: inherit;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: transform 150ms ease, background 150ms ease, box-shadow 150ms ease;
+  box-shadow: 0 10px 30px -14px rgba(29, 122, 183, 0.55);
+}
+
+.sb-generate-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: var(--cs-brand-deep-ink);
+  box-shadow: 0 14px 36px -14px rgba(29, 122, 183, 0.7);
+}
+
+.sb-generate-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.sb-generate-ghost {
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--cs-ink);
+  border: 1px solid var(--cs-border);
+  font-size: var(--cs-fs-5);
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.sb-generate-ghost:hover:not(:disabled) {
+  background: var(--cs-surface);
+  border-color: var(--cs-brand-sky);
+  color: var(--cs-brand-deep);
+}
+
+.sb-generate-ghost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sb-generate-danger {
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: var(--cs-danger);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 120ms ease, transform 120ms ease;
+}
+
+.sb-generate-danger:hover:not(:disabled) {
+  background: #991b1b;
+  transform: translateY(-1px);
+}
+
+.sb-generate-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sb-generate-inline-error {
+  margin-top: 12px;
+  color: var(--cs-danger);
+  background: var(--cs-danger-soft);
+  border: 1px solid rgba(185, 28, 28, 0.2);
+  padding: 10px 14px;
+  border-radius: var(--cs-radius-md);
+  font-size: var(--cs-fs-5);
+  line-height: 1.45;
+}
+
+.sb-generate-clone-error {
+  border-color: rgba(185, 28, 28, 0.25);
+}
+.sb-generate-clone-error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+.sb-generate-clone-error-actions a,
+.sb-generate-clone-error-actions button {
+  text-decoration: none;
+}
+
+.sb-generate-error-toast {
+  position: fixed;
+  left: 50%;
+  bottom: max(env(safe-area-inset-bottom), 16px);
+  transform: translateX(-50%);
+  background: var(--cs-danger);
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: var(--cs-radius-md);
+  font-size: var(--cs-fs-5);
+  z-index: 20;
+  max-width: calc(100% - 32px);
+  box-shadow: 0 20px 40px -20px rgba(185, 28, 28, 0.55);
+}
+
+/* --- Running (triage / analysis / script) --- */
+
+.sb-generate-running {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+
+.sb-generate-running-title {
+  font-size: var(--cs-fs-10);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--cs-ink);
+  margin: 0;
+}
+
+.sb-generate-running-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--cs-ink-soft);
+  font-size: var(--cs-fs-5);
+  font-variant-numeric: tabular-nums;
+}
+
+.sb-generate-elapsed {
+  font-weight: 600;
+  color: var(--cs-brand-deep);
+}
+
+.sb-generate-hint-dot {
+  color: var(--cs-ink-muted);
+}
+
+.sb-generate-reserved {
+  font-size: var(--cs-fs-4);
+  color: var(--cs-brand-deep-ink);
+  background: var(--cs-brand-soft);
+  border: 1px solid rgba(29, 122, 183, 0.15);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.sb-generate-spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid var(--cs-brand-soft);
+  border-top-color: var(--cs-brand-deep);
+  animation: sb-generate-spin 0.9s linear infinite;
+}
+
+.sb-generate-spinner-lg {
+  width: 56px;
+  height: 56px;
+  border-width: 4px;
+}
+
+@keyframes sb-generate-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-generate-spinner {
+    animation-duration: 3s;
+  }
+}
+
+/* --- Cancel confirm modal --- */
+
+.sb-generate-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(14, 34, 53, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 30;
+  padding: 16px;
+}
+
+.sb-generate-confirm {
+  width: 100%;
+  max-width: 480px;
+  background: var(--cs-surface);
+  color: var(--cs-ink);
+  border: 1px solid var(--cs-border);
+  border-radius: var(--cs-radius-lg);
+  padding: 24px;
+  box-shadow: 0 30px 60px -20px rgba(14, 34, 53, 0.35);
+}
+
+.sb-generate-confirm-title {
+  font-size: var(--cs-fs-8);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--cs-ink);
+  margin-bottom: 10px;
+}
+
+.sb-generate-confirm-body {
+  font-size: var(--cs-fs-5);
+  line-height: 1.55;
+  color: var(--cs-ink-soft);
+  margin: 0 0 18px;
+}
+
+.sb-generate-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* --- Playing (state 6) ---
+   The stage stays dark (templates are designed against black); the
+   surrounding chrome is light. */
+
+.sb-generate-player {
+  width: 100%;
+  max-width: 820px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sb-generate-audio-banner {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.sb-generate-audio-banner-failed {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #fecaca;
+}
+
+.sb-generate-player-stage {
+  /* Aspect ratio is set inline from the `designSize` prop so the box
+     always matches the design surface the templates are authored
+     against. Overriding here would clip content vertically because
+     templates use absolute-pixel layouts. */
+  position: relative;
+  width: 100%;
+  background: #05060b;
+  border: 1px solid var(--cs-border);
+  border-radius: var(--cs-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 30px 60px -40px rgba(14, 34, 53, 0.4);
+}
+
+/* Fixed 1280×1280 design surface, absolutely centered. Width/height are
+   set inline (DESIGN_W/DESIGN_H) so JS can drive the `scale(...)` part
+   of the same transform. `left/top: 50%` + `translate(-50%, -50%)` keeps
+   it centered regardless of scale. */
+.sb-generate-player-surface {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center center;
+}
+
+.sb-generate-player-stage .sb-presentation {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sb-generate-player-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sb-generate-player-info {
+  font-size: var(--cs-fs-4);
+  color: var(--cs-ink-muted);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.sb-generate-player-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+}
+
+.sb-generate-play-btn {
+  width: auto;
+  min-width: 140px;
+  padding: 12px 24px;
+  letter-spacing: 0.02em;
+}
+
+.sb-generate-voice-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--cs-fs-5);
+  color: var(--cs-ink-soft);
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--cs-surface);
+  border: 1px solid var(--cs-border);
+  cursor: pointer;
+}
+
+.sb-generate-voice-toggle input[type='checkbox'] {
+  accent-color: var(--cs-brand-deep);
+}
+
+.sb-generate-player-loop {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* When only one loop button is present (e.g. replaying a saved script
+   with no TriageReport to loop back to), center it instead of leaving
+   an empty grid cell. */
+.sb-generate-player-loop:has(> button:only-child) {
+  justify-items: center;
+}
+
+/* Tablet and up: widen, elevate cards, side-by-side loop buttons. */
+@media (min-width: 640px) {
+  .sb-generate-header {
+    padding: 16px 32px;
+    padding-top: max(env(safe-area-inset-top), 16px);
+  }
+
+  .sb-generate-main {
+    padding: 56px 24px;
+  }
+
+  .sb-generate-card {
+    padding: 40px 36px;
+  }
+
+  .sb-generate-url-form {
+    flex-direction: row;
+  }
+
+  .sb-generate-primary {
+    width: auto;
+    min-width: 180px;
+  }
+
+  .sb-generate-confirm-backdrop {
+    align-items: center;
+  }
+
+  .sb-generate-player-loop {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Desktop: two-column layout. Flow on the left, blog rail on the right. */
+@media (min-width: 960px) {
+  .sb-generate-card-title {
+    font-size: var(--cs-fs-13);
+  }
+
+  .sb-generate-logo {
+    height: 48px;
+  }
+
+  .sb-generate-main {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 40px;
+    justify-items: stretch;
+    padding: 64px 40px;
+  }
+
+  .sb-generate-flow-column {
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: 0;
+  }
+
+  .sb-generate-side-column {
+    max-width: 560px;
+    margin-left: 0;
+    margin-right: auto;
+    /* The blog rail stays in view while the user watches the flow update. */
+    position: sticky;
+    top: 96px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .sb-generate-main {
+    column-gap: 56px;
+    padding: 80px 48px;
+  }
+}
+
+@media (max-width: 720px) {
+  .sb-generate-logo {
+    height: 32px;
+  }
+  .sb-generate-card-title {
+    font-size: var(--cs-fs-11);
+  }
+}
+
+/* ---------- tech-stack-breakdown template ----------
+ * Full-bleed grid template that organises a repo's tech stack into up to six
+ * standard categories (Application, UI, Data, Network, Services, DevOps).
+ * Sections not supplied by the Director are simply absent — no empty rows.
+ *
+ * Surface chrome (bg, border, radius, shadow) comes from .cs-plate.
+ * Per-category accent color flows through --sb-techstack-accent set inline
+ * by the template on each card and chip. The warm accent is reserved for
+ * the .sb-emphasize pulse (accent-budget rule, spec §6).
+ *
+ * Reveal: cards slide up from translateY(10px), chips fade in after cards.
+ * Emphasize: a warm ring outlines the section header or a specific chip.
+ */
+
+.sb-techstack-wrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--cs-s-6) var(--cs-s-5);
+  font-family: var(--cs-font-ui);
+  color: var(--cs-ink-1);
+  overflow: hidden;
+}
+
+.sb-techstack-title {
+  margin: 0 0 var(--cs-s-5);
+  text-align: center;
+}
+
+/* ── Grid ────────────────────────────────────────────────────────────────── */
+
+.sb-techstack-grid {
+  display: grid;
+  gap: var(--cs-s-5);
+  width: 100%;
+  max-width: min(1500px, var(--sb-stage-w-max));
+  grid-template-columns: 1fr 1fr;
+}
+
+.sb-techstack-grid--cols-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.sb-techstack-grid--cols-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* ── Section card ────────────────────────────────────────────────────────── */
+
+.sb-techstack-card {
+  padding: var(--cs-s-5) var(--cs-s-5) var(--cs-s-4);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 350ms ease, transform 350ms ease;
+}
+
+.sb-techstack-card.sb-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Section header ──────────────────────────────────────────────────────── */
+
+.sb-techstack-section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--cs-s-2);
+  margin-bottom: var(--cs-s-3);
+  padding-bottom: var(--cs-s-2);
+  border-bottom: 1px solid color-mix(in oklch, var(--sb-techstack-accent, var(--cs-accent-cool)) 30%, transparent);
+  border-radius: 0;
+  transition: box-shadow 300ms ease;
+}
+
+.sb-techstack-section-header.sb-emphasize {
+  box-shadow:
+    0 0 0 2px var(--cs-accent-warm),
+    var(--cs-shadow-plate);
+  border-radius: var(--cs-radius-s, 4px);
+  padding: 4px 6px;
+  margin: -4px -6px var(--cs-s-3);
+}
+
+.sb-techstack-section-icon {
+  font-size: var(--cs-fs-10);
+  line-height: 1;
+  color: var(--sb-techstack-accent, var(--cs-accent-cool));
+  flex-shrink: 0;
+}
+
+.sb-techstack-section-label {
+  font-size: var(--cs-fs-9);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sb-techstack-accent, var(--cs-accent-cool));
+}
+
+/* ── Chip list ───────────────────────────────────────────────────────────── */
+
+.sb-techstack-chips {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cs-s-2);
+}
+
+/* ── Individual chip ─────────────────────────────────────────────────────── */
+
+.sb-techstack-chip {
+  display: flex;
+  align-items: baseline;
+  gap: var(--cs-s-3);
+  padding: var(--cs-s-2) var(--cs-s-3);
+  border-radius: var(--cs-r-s);
+  background: color-mix(in oklch, var(--sb-techstack-accent, var(--cs-accent-cool)) 8%, transparent);
+  border: 1px solid color-mix(in oklch, var(--sb-techstack-accent, var(--cs-accent-cool)) 20%, transparent);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity 280ms ease,
+    transform 280ms ease,
+    box-shadow 250ms ease;
+}
+
+.sb-techstack-chip.sb-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sb-techstack-chip.sb-emphasize {
+  box-shadow: 0 0 0 2px var(--cs-accent-warm);
+}
+
+.sb-techstack-chip-name {
+  font-size: var(--cs-fs-8);
+  font-weight: 600;
+  color: var(--cs-ink-1);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sb-techstack-chip-role {
+  font-size: var(--cs-fs-7);
+  color: var(--cs-ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- title-card template ----------
+ * Opening slide: a single full-bleed plate (16:9) with eyebrow header,
+ * Instrument-Serif italic display title, optional blurb, and a footer
+ * with analysis date + commit/branch. Calm — staggered fade-in then
+ * holds still. Surface comes from .cs-plate; this block owns layout,
+ * typography sizing, reveal transitions, and the warm-ring emphasize.
+ */
+
+.sb-titlecard-wrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--cs-s-5);
+  box-sizing: border-box;
+  color: var(--cs-ink-1);
+  font-family: var(--cs-font-ui);
+  /* Min-height: 0 lets a flex child shrink past its content height, which
+   * is required for the height-cap below to actually take effect. */
+  min-height: 0;
+}
+
+/* The stage sizes to whichever dimension constrains first. We give it
+ * both a width budget AND a height budget (100% of the wrapper),
+ * with a 16:9 aspect-ratio that resolves against whichever is tighter.
+ * Without `max-height: 100%`, a wide stage lets `width: 100%` win, the
+ * aspect-ratio forces a height taller than the wrapper, and the plate
+ * bleeds off the bottom. The flex parent's `align-items: center`
+ * re-centres whichever axis isn't fully filled. The cap clamps to the
+ * stage safe area so the plate stops short of the frame edge. */
+.sb-titlecard-stage {
+  position: relative;
+  width: 100%;
+  max-width: var(--sb-stage-w-max);
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.sb-titlecard-plate {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  /* Rows: header / body (flex) / meta. Brand is absolutely positioned
+   * over the meta block (see .sb-titlecard-brand). Keeping the grid at
+   * three rows means the plate height is never inflated by the brand. */
+  grid-template-rows: auto 1fr auto;
+  /* Establish a containment context so children can size against the
+   * plate (cqw / cqh) rather than the viewport (vw / vh). This is what
+   * keeps the headline + meta padding inside the plate even when the
+   * stage is small or the embed is scaled. */
+  container-type: size;
+  container-name: titlecard;
+  min-height: 0;
+}
+
+/* Header strip across the top of the plate. */
+.sb-titlecard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--cs-s-3) var(--cs-s-6);
+  border-bottom: 1px solid var(--cs-glass-border);
+  z-index: 1;
+}
+
+.sb-titlecard-eyebrow {
+  letter-spacing: 0.14em;
+}
+
+.sb-titlecard-tag {
+  white-space: nowrap;
+}
+
+/* Body — vertically centered title block.
+ *
+ * Padding is asymmetric: more on top (the kicker needs air above it)
+ * but tighter on the bottom so the meta row doesn't crowd against the
+ * blurb. align-content: center keeps the block visually centered in
+ * its grid track regardless of how much fixed space we leave at the
+ * top/bottom. min-height: 0 + overflow: hidden lets the body row be
+ * shrunk by the parent grid when the plate height tightens. */
+.sb-titlecard-body {
+  padding: 5cqh 6cqw 3cqh;
+  display: grid;
+  gap: 1.6cqh;
+  align-content: center;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  /* Nudge the whole body block up 20px — the visual centre felt low
+   * because the headline + blurb leave more whitespace below than the
+   * kicker leaves above. Pulls the kicker / repo / blurb up uniformly
+   * without changing meta or footer geometry. */
+  transform: translateY(-20px);
+}
+
+.sb-titlecard-kicker {
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-4);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cs-accent-cool);
+}
+
+.sb-titlecard-repo {
+  font-family: var(--cs-font-display);
+  font-style: italic;
+  font-weight: 400;
+  /* Container-relative size: ~12% of plate height, capped 48–104px.
+   * Tighter than 14cqh so the body doesn't dominate the plate and the
+   * meta row + safe-area below have unconditional breathing room. */
+  font-size: clamp(48px, 12cqh, 104px);
+  line-height: 0.96;
+  letter-spacing: -0.025em;
+  color: var(--cs-ink-1);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.sb-titlecard-repo-org {
+  display: block;
+  color: var(--cs-ink-3);
+  font-size: 0.45em;
+  font-style: italic;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.1em;
+}
+
+.sb-titlecard-repo-name {
+  display: block;
+}
+
+.sb-titlecard-blurb {
+  font-family: var(--cs-font-ui);
+  font-weight: 400;
+  font-size: clamp(30px, 4.8cqh, 40px);
+  line-height: 1.45;
+  color: var(--cs-ink-2);
+  max-width: 56ch;
+  margin: 0;
+  text-wrap: pretty;
+  /* Cap blurb to 4 lines on small stages so a long paragraph can't
+   * outgrow the body row — overflow then truncates with an ellipsis. */
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Footer — analysis date + commit/branch.
+ *
+ * Bottom padding is `max(40px, 6cqh)` — the floor reserves room for:
+ *   1. italic display-font descenders ("y" in "April"),
+ *   2. the absolutely-positioned brand mark sitting below the values,
+ *   3. the plate's bottom border-radius clipping anything past it.
+ *
+ * align-items: center keeps the date + commit values vertically
+ * aligned in the row rather than pinning them to the bottom edge. */
+.sb-titlecard-meta {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--cs-s-6);
+  padding: max(16px, 2.4cqh) 6cqw max(40px, 6cqh);
+  border-top: 1px solid var(--cs-glass-border);
+  background: linear-gradient(180deg, transparent, hsl(220 40% 6% / 0.4));
+}
+
+.sb-titlecard-meta-block {
+  display: grid;
+  gap: var(--cs-s-2);
+}
+
+.sb-titlecard-meta-block--right {
+  text-align: right;
+}
+
+.sb-titlecard-meta-label {
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-1);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cs-ink-3);
+}
+
+.sb-titlecard-meta-value {
+  font-family: var(--cs-font-mono);
+  font-size: clamp(13px, 2cqh, 18px);
+  font-weight: 500;
+  color: var(--cs-ink-1);
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.sb-titlecard-meta-value--lg {
+  font-family: var(--cs-font-display);
+  font-style: italic;
+  font-weight: 400;
+  /* Tighter cap on the date so its descenders can't rival the headline
+   * and force the meta row taller than the bottom padding budget. */
+  font-size: clamp(18px, 3cqh, 26px);
+  letter-spacing: -0.01em;
+  /* Italic display glyphs have deep descenders ("y", "g", "p"). A
+   * generous line-height + padding-bottom keeps them inside the row. */
+  line-height: 1.2;
+  padding-bottom: 0.1em;
+}
+
+.sb-titlecard-meta-rule {
+  align-self: center;
+  height: 1px;
+  background: var(--cs-glass-border);
+}
+
+/* Brand mark sits inside the plate's bottom safe-area, below the meta
+ * values but above the plate's rounded edge. It is absolutely
+ * positioned so it doesn't add a grid row (which would push the meta
+ * up and squeeze the body). The meta row's bottom padding budget
+ * (`max(40px, 6cqh)`) is sized to leave clear room for this mark. */
+.sb-titlecard-brand {
+  position: absolute;
+  bottom: max(8px, 1.2cqh);
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cs-s-2);
+  font-family: var(--cs-font-mono);
+  font-size: clamp(9px, 1.3cqh, 11px);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cs-ink-3);
+}
+
+.sb-titlecard-brand-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cs-accent-warm);
+  display: inline-block;
+}
+
+/* Reveal — each section fades + lifts in once via .sb-visible. */
+.sb-titlecard-header,
+.sb-titlecard-kicker,
+.sb-titlecard-repo,
+.sb-titlecard-blurb,
+.sb-titlecard-meta,
+.sb-titlecard-brand {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .55s ease, transform .55s ease, box-shadow .3s ease;
+}
+
+.sb-titlecard-header.sb-visible,
+.sb-titlecard-kicker.sb-visible,
+.sb-titlecard-repo.sb-visible,
+.sb-titlecard-blurb.sb-visible,
+.sb-titlecard-meta.sb-visible,
+.sb-titlecard-brand.sb-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Emphasize — warm ring on the targeted block; clears on its own. */
+.sb-titlecard-repo.sb-emphasize,
+.sb-titlecard-blurb.sb-emphasize,
+.sb-titlecard-kicker.sb-emphasize,
+.sb-titlecard-meta-block.sb-emphasize {
+  box-shadow:
+    0 0 0 2px var(--cs-accent-warm),
+    0 0 24px color-mix(in oklch, var(--cs-accent-warm) 35%, transparent);
+  border-radius: var(--cs-r-m);
+  transition: box-shadow .3s ease;
+}
+
+.sb-titlecard-repo.sb-emphasize {
+  /* the title is large; pad the ring out so it doesn't clip glyphs */
+  padding: var(--cs-s-2) var(--cs-s-4);
+  margin: calc(var(--cs-s-2) * -1) calc(var(--cs-s-4) * -1);
+}
+
+.sb-titlecard-meta-block.sb-emphasize {
+  padding: var(--cs-s-2) var(--cs-s-3);
+  margin: calc(var(--cs-s-2) * -1) calc(var(--cs-s-3) * -1);
+}
+
+/* ── pr-title-card ────────────────────────────────────────────────
+ *
+ * Opens a PR-explainer run. Bookends outro-card. Visual distinction
+ * from title-card lives in the headline row: a left-aligned italic
+ * display PR title paired with a giant right-aligned tabular-nums
+ * mono PR number. The number is the dominant identifier — sized to
+ * read as the anchor in a thumbnail.
+ *
+ * Surface chrome (background, border, radius, shadow) comes from
+ * .cs-plate. This block owns layout, sizing, reveal transitions,
+ * and the warm-ring emphasize ports.
+ */
+
+.sb-prtitle-wrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--cs-s-5);
+  box-sizing: border-box;
+  color: var(--cs-ink-1);
+  font-family: var(--cs-font-ui);
+  min-height: 0;
+}
+
+.sb-prtitle-stage {
+  position: relative;
+  width: 100%;
+  max-width: var(--sb-stage-w-max);
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.sb-prtitle-plate {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  container-type: size;
+  container-name: prtitle;
+  min-height: 0;
+}
+
+/* Header strip — eyebrow + cool scene tag (PR runs default the badge
+ * to --cool so the chrome reads as "PR" not "scan"). */
+.sb-prtitle-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--cs-s-3) var(--cs-s-6);
+  border-bottom: 1px solid var(--cs-glass-border);
+  z-index: 1;
+}
+
+.sb-prtitle-eyebrow { letter-spacing: 0.14em; }
+.sb-prtitle-tag { white-space: nowrap; }
+
+/* Body — vertically-centered stack: breadcrumb, headline row, branch
+ * rail, stat strip, optional chip row. align-content: center keeps the
+ * block visually centred regardless of how many optional rows are
+ * present. min-height: 0 + overflow: hidden lets the body row shrink
+ * when the plate height tightens. */
+.sb-prtitle-body {
+  padding: 4cqh 6cqw 3cqh;
+  display: grid;
+  gap: 2.4cqh;
+  align-content: center;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  /* Same gentle upward nudge as title-card — the footer's bottom
+   * padding budget leaves more space below than the header leaves
+   * above, so this re-centres the body block optically. */
+  transform: translateY(-16px);
+}
+
+.sb-prtitle-breadcrumb {
+  font-family: var(--cs-font-mono);
+  font-size: clamp(13px, 1.8cqh, 17px);
+  letter-spacing: 0.06em;
+  color: var(--cs-ink-3);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4em;
+}
+
+.sb-prtitle-breadcrumb-org { color: var(--cs-ink-3); }
+.sb-prtitle-breadcrumb-slash { color: var(--cs-ink-4); }
+.sb-prtitle-breadcrumb-repo {
+  color: var(--cs-ink-2);
+  font-weight: 500;
+}
+
+/* Headline row — italic title (1fr) + mono PR# (auto). The number is
+ * sized larger than the title so the thumbnail is anchored by the
+ * identifier, not the prose. Tabular-nums + lining figures keep
+ * "#384" / "#1234" the same visual weight across PRs. */
+.sb-prtitle-headline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4cqw;
+}
+
+.sb-prtitle-title {
+  font-family: var(--cs-font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(36px, 8.4cqh, 76px);
+  line-height: 1.0;
+  letter-spacing: -0.022em;
+  color: var(--cs-ink-1);
+  margin: 0;
+  text-wrap: balance;
+  /* Two-line cap on small stages so a long PR title can't outgrow
+   * the headline row and squeeze the # block. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sb-prtitle-number {
+  font-family: var(--cs-font-mono);
+  font-weight: 600;
+  /* The anchor element — sized larger than the title and warm so it
+   * reads as the dominant identifier in a thumbnail. */
+  font-size: clamp(52px, 13cqh, 128px);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  color: var(--cs-accent-warm);
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* Branch rail — mono refs joined by a thin arrow. The "to" ref uses
+ * cool accent to signal "merge target". */
+.sb-prtitle-branch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cs-s-3);
+  font-family: var(--cs-font-mono);
+  font-size: clamp(13px, 2cqh, 18px);
+  letter-spacing: 0.02em;
+  color: var(--cs-ink-2);
+  /* Keep the rail visually self-contained so the row reads as a single
+   * unit, not a grid column. Padding + sunken-style border = pill. */
+  padding: 0.4em 0.9em;
+  border: 1px solid var(--cs-glass-sunken-border);
+  background: var(--cs-glass-sunken-bg);
+  border-radius: var(--cs-r-l);
+  width: max-content;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sb-prtitle-branch-ref--from { color: var(--cs-ink-1); }
+.sb-prtitle-branch-arrow {
+  color: var(--cs-ink-3);
+  font-family: var(--cs-font-ui);
+}
+.sb-prtitle-branch-ref--to { color: var(--cs-accent-cool); }
+
+/* Stat strip — additions / deletions / files. Tabular-nums so the
+ * three numbers visually align. Add = ok-green; del = warn; files =
+ * dim. The 6cqw gap keeps the strip from collapsing into one blob
+ * on narrow stages. */
+.sb-prtitle-stats {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6cqw;
+  font-family: var(--cs-font-mono);
+  font-size: clamp(18px, 3.2cqh, 30px);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+.sb-prtitle-stat--add   { color: var(--cs-accent-ok); }
+.sb-prtitle-stat--del   { color: var(--cs-accent-warn); }
+.sb-prtitle-stat--files { color: var(--cs-ink-3); font-weight: 400; }
+
+/* Label chips — small badges with per-label colours. Override the
+ * .cs-badge baseline color/border via inline style from the template
+ * so the GitHub label palette comes through. */
+.sb-prtitle-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--cs-s-2);
+}
+
+.sb-prtitle-chip {
+  /* nudge up from .cs-badge defaults — these need to read at video
+   * scale, not just at studio-tab scale. */
+  font-size: var(--cs-fs-3);
+  padding: 4px 10px;
+  letter-spacing: 0.14em;
+}
+
+/* Footer — four meta blocks in a row: author / reviewers / date / sha.
+ * Same visual language as title-card's footer (mono label + value),
+ * but four columns instead of two so PR-specific identity surfaces. */
+.sb-prtitle-meta {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: end;
+  gap: var(--cs-s-5);
+  padding: max(16px, 2.4cqh) 6cqw max(40px, 6cqh);
+  border-top: 1px solid var(--cs-glass-border);
+  background: linear-gradient(180deg, transparent, hsl(220 40% 6% / 0.4));
+}
+
+.sb-prtitle-meta-block {
+  display: grid;
+  gap: var(--cs-s-2);
+  min-width: 0;
+}
+
+.sb-prtitle-meta-block--right { text-align: right; }
+
+.sb-prtitle-meta-label {
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-1);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cs-ink-3);
+}
+
+.sb-prtitle-meta-value {
+  font-family: var(--cs-font-mono);
+  font-size: clamp(13px, 2cqh, 18px);
+  font-weight: 500;
+  color: var(--cs-ink-1);
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Brand — bottom-centre, mirrors title-card so the bookend with
+ * outro-card (also brand-marked) reads as one family. */
+.sb-prtitle-brand {
+  position: absolute;
+  bottom: max(8px, 1.2cqh);
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cs-s-2);
+  font-family: var(--cs-font-mono);
+  font-size: clamp(9px, 1.3cqh, 11px);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cs-ink-3);
+}
+
+.sb-prtitle-brand-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cs-accent-warm);
+  display: inline-block;
+}
+
+/* Reveal — each section fades + lifts in once via .sb-visible. */
+.sb-prtitle-header,
+.sb-prtitle-breadcrumb,
+.sb-prtitle-headline,
+.sb-prtitle-branch,
+.sb-prtitle-stats,
+.sb-prtitle-chips,
+.sb-prtitle-meta,
+.sb-prtitle-brand {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .55s ease, transform .55s ease, box-shadow .3s ease;
+}
+
+.sb-prtitle-header.sb-visible,
+.sb-prtitle-breadcrumb.sb-visible,
+.sb-prtitle-headline.sb-visible,
+.sb-prtitle-branch.sb-visible,
+.sb-prtitle-stats.sb-visible,
+.sb-prtitle-chips.sb-visible,
+.sb-prtitle-meta.sb-visible,
+.sb-prtitle-brand.sb-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Emphasize — warm ring on the targeted block. */
+.sb-prtitle-title.sb-emphasize,
+.sb-prtitle-number.sb-emphasize,
+.sb-prtitle-stats.sb-emphasize,
+.sb-prtitle-chips.sb-emphasize,
+.sb-prtitle-meta-block.sb-emphasize {
+  box-shadow:
+    0 0 0 2px var(--cs-accent-warm),
+    0 0 24px color-mix(in oklch, var(--cs-accent-warm) 35%, transparent);
+  border-radius: var(--cs-r-m);
+  transition: box-shadow .3s ease;
+}
+
+.sb-prtitle-title.sb-emphasize,
+.sb-prtitle-number.sb-emphasize {
+  padding: var(--cs-s-2) var(--cs-s-4);
+  margin: calc(var(--cs-s-2) * -1) calc(var(--cs-s-4) * -1);
+}
+
+.sb-prtitle-stats.sb-emphasize,
+.sb-prtitle-chips.sb-emphasize {
+  padding: var(--cs-s-2) var(--cs-s-3);
+  margin: calc(var(--cs-s-2) * -1) calc(var(--cs-s-3) * -1);
+}
+
+/* ── outro-card ───────────────────────────────────────────────────
+ *
+ * Closes a PR-explainer run. Bookends pr-title-card: same plate,
+ * same brand mark, same footer language, same 16:9 stage aspect, so
+ * the open/close pair reads as a single family. The headline inverts
+ * the opener — instead of "italic title + giant mono PR#", the close
+ * leads with an italic display takeaway sentence and pins a colour-
+ * coded recommendation chip directly underneath as the anchor.
+ *
+ * Recommendation tone:
+ *   --ok   approve              → ok-green
+ *   --warm approve-with-comments→ warm
+ *   --warn request-changes      → warn (red/orange)
+ *   --cool discuss              → cool (blue)
+ *
+ * Surface chrome (background, border, radius, shadow) comes from
+ * .cs-plate. This block owns layout, sizing, reveal transitions,
+ * and the warm-ring emphasize ports.
+ */
+
+.sb-outro-wrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--cs-s-5);
+  box-sizing: border-box;
+  color: var(--cs-ink-1);
+  font-family: var(--cs-font-ui);
+  min-height: 0;
+}
+
+.sb-outro-stage {
+  position: relative;
+  width: 100%;
+  max-width: var(--sb-stage-w-max);
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.sb-outro-plate {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  container-type: size;
+  container-name: outro;
+  min-height: 0;
+}
+
+/* Header strip — eyebrow + cool scene tag. Cool badge keeps the close
+ * in the same chrome family as the opener; the "PR-99" sentinel is the
+ * cue that this is the bookend. */
+.sb-outro-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--cs-s-3) var(--cs-s-6);
+  border-bottom: 1px solid var(--cs-glass-border);
+  z-index: 1;
+}
+
+.sb-outro-eyebrow { letter-spacing: 0.14em; }
+.sb-outro-tag { white-space: nowrap; }
+
+/* Body — vertically-centered stack: takeaway, recommendation chip,
+ * optional next-steps list. Same -16px optical re-centring as
+ * pr-title-card to compensate for the heavier footer padding budget. */
+.sb-outro-body {
+  padding: 4cqh 6cqw 3cqh;
+  display: grid;
+  gap: 3cqh;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  transform: translateY(-16px);
+}
+
+/* Takeaway — italic display, the verdict. Sized smaller than the
+ * pr-title-card title because it's a full sentence, not a headline,
+ * and we want the recommendation chip to share the anchor weight. */
+.sb-outro-takeaway {
+  font-family: var(--cs-font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(28px, 6.4cqh, 60px);
+  line-height: 1.15;
+  letter-spacing: -0.018em;
+  color: var(--cs-ink-1);
+  margin: 0;
+  max-width: 22ch;
+  text-wrap: balance;
+  /* Three-line cap; producer should aim for one, but we don't blow up
+   * if persona text runs long. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Recommendation chip — large, tone-coloured, mono-cased so it reads
+ * as a verdict stamp rather than a label. Background is tinted with
+ * the tone colour at low opacity so the chip carries chromatic weight
+ * without overpowering the takeaway. */
+.sb-outro-rec {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cs-s-3);
+  padding: 0.6em 1.2em;
+  border-radius: var(--cs-r-l);
+  font-family: var(--cs-font-mono);
+  font-size: clamp(16px, 2.8cqh, 26px);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: 1px solid var(--cs-glass-border);
+  background: var(--cs-glass-sunken-bg);
+  white-space: nowrap;
+}
+
+.sb-outro-rec-dot {
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Tone variants — color the chip text + dot, tint the chip background
+ * and border with the same hue. */
+.sb-outro-rec--ok {
+  color: var(--cs-accent-ok);
+  border-color: color-mix(in oklch, var(--cs-accent-ok) 38%, transparent);
+  background: color-mix(in oklch, var(--cs-accent-ok) 10%, var(--cs-glass-sunken-bg));
+}
+.sb-outro-rec--ok .sb-outro-rec-dot { background: var(--cs-accent-ok); }
+
+.sb-outro-rec--warm {
+  color: var(--cs-accent-warm);
+  border-color: color-mix(in oklch, var(--cs-accent-warm) 38%, transparent);
+  background: color-mix(in oklch, var(--cs-accent-warm) 10%, var(--cs-glass-sunken-bg));
+}
+.sb-outro-rec--warm .sb-outro-rec-dot { background: var(--cs-accent-warm); }
+
+.sb-outro-rec--warn {
+  color: var(--cs-accent-warn);
+  border-color: color-mix(in oklch, var(--cs-accent-warn) 42%, transparent);
+  background: color-mix(in oklch, var(--cs-accent-warn) 12%, var(--cs-glass-sunken-bg));
+}
+.sb-outro-rec--warn .sb-outro-rec-dot { background: var(--cs-accent-warn); }
+
+.sb-outro-rec--cool {
+  color: var(--cs-accent-cool);
+  border-color: color-mix(in oklch, var(--cs-accent-cool) 38%, transparent);
+  background: color-mix(in oklch, var(--cs-accent-cool) 10%, var(--cs-glass-sunken-bg));
+}
+.sb-outro-rec--cool .sb-outro-rec-dot { background: var(--cs-accent-cool); }
+
+/* Next steps — optional mono bullets below the chip. Caps at 3 in the
+ * template; CSS just lays them out as a tight column with a thin
+ * arrow marker. */
+.sb-outro-next {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--cs-s-2);
+  font-family: var(--cs-font-mono);
+  font-size: clamp(12px, 1.8cqh, 16px);
+  color: var(--cs-ink-2);
+  letter-spacing: 0.02em;
+  max-width: 56ch;
+  text-align: left;
+}
+
+.sb-outro-next-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--cs-s-2);
+  align-items: baseline;
+  line-height: 1.4;
+}
+
+.sb-outro-next-marker {
+  color: var(--cs-ink-3);
+}
+
+.sb-outro-next-text {
+  color: var(--cs-ink-2);
+}
+
+/* Footer — three meta blocks: PR / sha / date. One fewer column than
+ * pr-title-card because the closer doesn't repeat author/reviewers;
+ * the bookend reads as "same chrome, lighter footer". */
+.sb-outro-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: var(--cs-s-5);
+  padding: max(16px, 2.4cqh) 6cqw max(40px, 6cqh);
+  border-top: 1px solid var(--cs-glass-border);
+  background: linear-gradient(180deg, transparent, hsl(220 40% 6% / 0.4));
+}
+
+.sb-outro-meta-block {
+  display: grid;
+  gap: var(--cs-s-2);
+  min-width: 0;
+}
+
+.sb-outro-meta-block--right { text-align: right; }
+
+.sb-outro-meta-label {
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-1);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cs-ink-3);
+}
+
+.sb-outro-meta-value {
+  font-family: var(--cs-font-mono);
+  font-size: clamp(13px, 2cqh, 18px);
+  font-weight: 500;
+  color: var(--cs-ink-1);
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Brand mark — identical to pr-title-card so the bookend reads as
+ * one family at first glance. */
+.sb-outro-brand {
+  position: absolute;
+  bottom: max(8px, 1.2cqh);
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cs-s-2);
+  font-family: var(--cs-font-mono);
+  font-size: clamp(9px, 1.3cqh, 11px);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cs-ink-3);
+}
+
+.sb-outro-brand-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cs-accent-warm);
+  display: inline-block;
+}
+
+/* Reveal — each section fades + lifts in once via .sb-visible. */
+.sb-outro-header,
+.sb-outro-takeaway,
+.sb-outro-rec,
+.sb-outro-next,
+.sb-outro-meta,
+.sb-outro-brand {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .55s ease, transform .55s ease, box-shadow .3s ease;
+}
+
+.sb-outro-header.sb-visible,
+.sb-outro-takeaway.sb-visible,
+.sb-outro-rec.sb-visible,
+.sb-outro-next.sb-visible,
+.sb-outro-meta.sb-visible,
+.sb-outro-brand.sb-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Emphasize — warm ring on the targeted block. Recommendation chip
+ * uses its tone-coloured glow instead so the pulse reinforces the
+ * verdict colour rather than fighting it. */
+.sb-outro-takeaway.sb-emphasize,
+.sb-outro-brand.sb-emphasize {
+  box-shadow:
+    0 0 0 2px var(--cs-accent-warm),
+    0 0 24px color-mix(in oklch, var(--cs-accent-warm) 35%, transparent);
+  border-radius: var(--cs-r-m);
+  transition: box-shadow .3s ease;
+}
+
+.sb-outro-next.sb-emphasize {
+  box-shadow:
+    0 0 0 2px var(--cs-accent-warm),
+    0 0 24px color-mix(in oklch, var(--cs-accent-warm) 35%, transparent);
+  border-radius: var(--cs-r-m);
+  padding: var(--cs-s-2) var(--cs-s-3);
+  margin: calc(var(--cs-s-2) * -1) calc(var(--cs-s-3) * -1);
+  transition: box-shadow .3s ease, padding .3s ease, margin .3s ease;
+}
+
+.sb-outro-takeaway.sb-emphasize {
+  padding: var(--cs-s-2) var(--cs-s-4);
+  margin: calc(var(--cs-s-2) * -1) calc(var(--cs-s-4) * -1);
+}
+
+.sb-outro-rec.sb-emphasize {
+  /* Tone-matched glow per recommendation kind. */
+  box-shadow:
+    0 0 0 2px currentColor,
+    0 0 28px color-mix(in oklch, currentColor 40%, transparent);
+  transition: box-shadow .3s ease;
+}
+
+/* ── pr-objectives ────────────────────────────────────────────────
+ *
+ * "What this PR is doing" — three visually distinct tiers (primary
+ * largest, secondary medium, constraints smallest + muted). Later
+ * scenes mark rows checked via the emphasize port with a "check:<id>"
+ * target prefix; the checked state is sticky and visually distinct
+ * from the warm-ring pulse.
+ *
+ * Surface chrome comes from .cs-plate. This block owns layout,
+ * sizing, reveal transitions, check/pulse states.
+ */
+
+.sb-probj-wrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--cs-s-5);
+  box-sizing: border-box;
+  color: var(--cs-ink-1);
+  font-family: var(--cs-font-ui);
+  min-height: 0;
+}
+
+.sb-probj-stage {
+  position: relative;
+  width: 100%;
+  max-width: var(--sb-stage-w-max);
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.sb-probj-plate {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  container-type: size;
+  container-name: probj;
+  min-height: 0;
+}
+
+.sb-probj-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--cs-s-3) var(--cs-s-6);
+  border-bottom: 1px solid var(--cs-glass-border);
+  z-index: 1;
+}
+
+.sb-probj-eyebrow { letter-spacing: 0.14em; }
+.sb-probj-tag { white-space: nowrap; }
+
+/* Body — title at top of the body block, then the three tier groups
+ * stacked. Padding mirrors pr-title-card so the two scenes feel like
+ * the same family when they cut between each other. */
+.sb-probj-body {
+  padding: 4cqh 6cqw 5cqh;
+  display: grid;
+  gap: 3cqh;
+  align-content: start;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sb-probj-title {
+  font-family: var(--cs-font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(32px, 6.2cqh, 56px);
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  color: var(--cs-ink-1);
+  margin: 0;
+  text-wrap: balance;
+}
+
+/* Tier group — small mono label + list of rows. Tier label sits to
+ * the left of the rows visually; on narrow stages it stacks above. */
+.sb-probj-tier {
+  display: grid;
+  grid-template-columns: 14cqw minmax(0, 1fr);
+  align-items: start;
+  gap: var(--cs-s-5);
+}
+
+.sb-probj-tier-label {
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-2);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cs-ink-3);
+  padding-top: 0.5em;
+}
+
+.sb-probj-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.6cqh;
+  min-width: 0;
+}
+
+/* Row — dot + statement. Each tier sizes its text and dot differently
+ * so a primary row reads as twice the weight of a constraint row at
+ * a glance. */
+.sb-probj-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--cs-s-4);
+  position: relative;
+}
+
+.sb-probj-dot {
+  display: inline-block;
+  flex-shrink: 0;
+  border-radius: 999px;
+  /* Default = primary-tier sizing; secondary/constraint override below. */
+  width: 0.7em;
+  height: 0.7em;
+  background: var(--cs-accent-warm);
+  /* The check state overlays a glyph; absolutely positioned ::after
+   * keeps the dot box from resizing when it gains a checkmark. */
+  position: relative;
+  align-self: center;
+  transition: background-color .3s ease, box-shadow .3s ease;
+}
+
+.sb-probj-text {
+  color: var(--cs-ink-1);
+  /* Default = primary; tiers override below. */
+  font-family: var(--cs-font-display);
+  font-style: italic;
+  font-size: clamp(24px, 4.4cqh, 40px);
+  line-height: 1.18;
+  letter-spacing: -0.012em;
+  text-wrap: pretty;
+  transition: color .3s ease, opacity .3s ease;
+}
+
+/* Primary tier — italic display, warm dot. */
+.sb-probj-row--primary .sb-probj-dot {
+  width: 0.7em;
+  height: 0.7em;
+  background: var(--cs-accent-warm);
+}
+.sb-probj-row--primary .sb-probj-text {
+  font-family: var(--cs-font-display);
+  font-style: italic;
+  font-size: clamp(26px, 4.8cqh, 44px);
+  color: var(--cs-ink-1);
+}
+
+/* Secondary tier — mono, cool dot, dimmer ink. */
+.sb-probj-row--secondary .sb-probj-dot {
+  width: 0.55em;
+  height: 0.55em;
+  background: var(--cs-accent-cool);
+}
+.sb-probj-row--secondary .sb-probj-text {
+  font-family: var(--cs-font-ui);
+  font-style: normal;
+  font-size: clamp(17px, 2.8cqh, 24px);
+  color: var(--cs-ink-2);
+  letter-spacing: -0.005em;
+}
+
+/* Constraint tier — smallest, dimmest, with WON'T mini-badge in place
+ * of a dot. Reads as "deliberately not doing this" framing. */
+.sb-probj-row--constraint {
+  opacity: 0.78;
+}
+.sb-probj-row--constraint .sb-probj-text {
+  font-family: var(--cs-font-ui);
+  font-style: normal;
+  font-size: clamp(14px, 2.2cqh, 19px);
+  color: var(--cs-ink-3);
+  letter-spacing: 0;
+}
+.sb-probj-dot--wont {
+  /* Replace the dot with a small inline badge. */
+  width: auto;
+  height: auto;
+  padding: 2px 7px;
+  border-radius: var(--cs-r-m);
+  background: transparent;
+  border: 1px solid color-mix(in oklch, var(--cs-ink-3) 40%, transparent);
+  color: var(--cs-ink-3);
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-1);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  align-self: center;
+}
+
+/* Checked state — sticky. The dot fades to ok-green and overlays a
+ * checkmark; the text picks up a quiet strikethrough so a scrubbing
+ * viewer can scan which objectives have been proven. Constraints
+ * cannot be checked (the template no-ops the verb), so this rule is
+ * a no-match on .sb-probj-row--constraint.sb-checked by design. */
+.sb-probj-row.sb-checked .sb-probj-dot {
+  background: var(--cs-accent-ok);
+  box-shadow: 0 0 0 2px color-mix(in oklch, var(--cs-accent-ok) 30%, transparent);
+}
+.sb-probj-row.sb-checked .sb-probj-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* SVG check mark — sized to the dot via background-size: contain. */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M3.5 8.5l3 3 6-6.5' fill='none' stroke='%230a0d14' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 70% 70%;
+}
+.sb-probj-row.sb-checked .sb-probj-text {
+  color: var(--cs-ink-2);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in oklch, var(--cs-ink-3) 60%, transparent);
+  text-decoration-thickness: 1px;
+}
+
+/* Reveal — header/title + each row fade + lift in. The template's
+ * imperative stagger drives .sb-visible on a per-row schedule. */
+.sb-probj-header,
+.sb-probj-title,
+.sb-probj-row {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .55s ease, transform .55s ease,
+              color .3s ease, background-color .3s ease, box-shadow .3s ease;
+}
+
+.sb-probj-header.sb-visible,
+.sb-probj-title.sb-visible,
+.sb-probj-row.sb-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Constraint rows hold their dimmer baseline opacity once visible. */
+.sb-probj-row--constraint.sb-visible { opacity: 0.78; }
+
+/* Pulse — the runtime emphasize verb. Warm ring around the row. */
+.sb-probj-row.sb-emphasize {
+  box-shadow:
+    0 0 0 2px var(--cs-accent-warm),
+    0 0 24px color-mix(in oklch, var(--cs-accent-warm) 35%, transparent);
+  border-radius: var(--cs-r-m);
+  padding: var(--cs-s-2) var(--cs-s-3);
+  margin: calc(var(--cs-s-2) * -1) calc(var(--cs-s-3) * -1);
+  transition: box-shadow .3s ease;
+}
+
+/* ── code-diff ────────────────────────────────────────────────────
+ *
+ * Before/after view of a hunk. Split mode = two sunken panes side by
+ * side; unified mode = one column with +/− gutters. Inherits the
+ * .sb-code Prism token palette from code-zoom for visual continuity.
+ *
+ * Line-level highlight is sticky (background tint + left rule) so
+ * multiple paired lines can stay lit at once — the bilateral case.
+ * Column-level pulse is a transient warm ring (1.4s) for the
+ * "look at THIS side" beat.
+ */
+
+.sb-diff-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  max-width: var(--sb-stage-w-max);
+  max-height: calc(100% - 2 * var(--sb-stage-inset));
+  transform: translate(-50%, -50%) scale(var(--sb-start-scale, 0.15));
+  opacity: 0;
+  transition: transform 700ms cubic-bezier(0.2, 0.9, 0.25, 1.15), opacity 350ms ease;
+  pointer-events: auto;
+  box-sizing: border-box;
+}
+
+.sb-diff-wrapper.sb-zoom-active {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.sb-diff-wrapper.sb-zoom-out {
+  transform: translate(-50%, -50%) scale(0.2);
+  opacity: 0;
+}
+
+.sb-diff-stage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sb-diff-plate {
+  flex: 1;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  min-height: 0;
+  container-type: size;
+  container-name: diff;
+}
+
+.sb-diff-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--cs-s-3) var(--cs-s-6);
+  border-bottom: 1px solid var(--cs-glass-border);
+}
+
+.sb-diff-eyebrow { letter-spacing: 0.14em; }
+.sb-diff-tag { white-space: nowrap; }
+
+/* File row — file path badge on the left; in split mode, BEFORE/AFTER
+ * column labels track the column geometry on the right so the viewer
+ * sees which column is which before reading any code. */
+.sb-diff-file-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--cs-s-4);
+  padding: var(--cs-s-3) var(--cs-s-6);
+  border-bottom: 1px solid var(--cs-glass-border);
+}
+
+.sb-diff-file {
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-3);
+  letter-spacing: 0.04em;
+  text-transform: none; /* file paths are case-sensitive */
+}
+
+.sb-diff-label-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--cs-s-4);
+  justify-items: center;
+}
+
+.sb-diff-side-label {
+  font-family: var(--cs-font-mono);
+  font-size: var(--cs-fs-2);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.sb-diff-side-label--before { color: var(--cs-accent-warn); }
+.sb-diff-side-label--after  { color: var(--cs-accent-ok); }
+
+/* Body — either two columns or one. Padding is asymmetric so the
+ * file-row above doesn't crowd the panes; min-height: 0 lets the
+ * scrollable code areas inside the panes shrink correctly. */
+.sb-diff-body {
+  padding: var(--cs-s-4) var(--cs-s-5);
+  display: grid;
+  gap: var(--cs-s-4);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sb-diff-body--split {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.sb-diff-body--unified {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.sb-diff-col {
+  position: relative;
+  overflow: auto;
+  min-width: 0;
+  min-height: 0;
+  transition: box-shadow .3s ease;
+}
+
+/* Side-tinted top rule on each split column so the viewer can tell
+ * which is which without reading the BEFORE / AFTER labels every time. */
+.sb-diff-col--before { box-shadow: inset 0 2px 0 color-mix(in oklch, var(--cs-accent-warn) 60%, transparent); }
+.sb-diff-col--after  { box-shadow: inset 0 2px 0 color-mix(in oklch, var(--cs-accent-ok) 60%, transparent); }
+
+/* Pre/code overrides — tighter than the standalone code-zoom because
+ * a split-mode pane has roughly half the width budget. */
+.sb-diff-pre {
+  margin: 0;
+  padding: var(--cs-s-4) var(--cs-s-5);
+  font-family: var(--cs-font-mono);
+  font-size: clamp(13px, 1.6cqh, 18px);
+  line-height: 1.55;
+  color: var(--cs-ink-1);
+}
+
+.sb-diff-pre code {
+  display: block;
+  white-space: pre;
+  background: transparent;
+}
+
+/* Each rendered line — split mode lays out as gutter + content; unified
+ * adds a leading sign column. We use inline-grid on the row so the
+ * gutter stays a fixed column and the content scrolls inside it. */
+.sb-diff-line {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: var(--cs-s-3);
+  padding: 0 var(--cs-s-3);
+  margin: 0 calc(var(--cs-s-3) * -1);
+  border-radius: var(--cs-r-s);
+  transition: background-color .3s ease, box-shadow .3s ease;
+  width: 100%;
+}
+
+.sb-diff-line--unified {
+  /* sign + gutter + content */
+  grid-template-columns: auto auto minmax(0, 1fr);
+}
+
+.sb-diff-gutter {
+  font-family: var(--cs-font-mono);
+  font-size: 0.78em;
+  color: var(--cs-ink-4);
+  text-align: right;
+  min-width: 2.5ch;
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.sb-diff-sign {
+  font-family: var(--cs-font-mono);
+  font-weight: 600;
+  user-select: none;
+  width: 1ch;
+  text-align: center;
+}
+
+.sb-diff-sign--before { color: var(--cs-accent-warn); }
+.sb-diff-sign--after  { color: var(--cs-accent-ok); }
+
+.sb-diff-line-content {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Sticky line highlight — same warm rule the code-zoom uses, but
+ * tinted by which side the line belongs to in unified mode so the
+ * highlight reads as "this deleted line" vs "this added line".
+ * In split mode the column is already side-coloured so we keep the
+ * tint warm-neutral. */
+.sb-diff-line.sb-line-highlight {
+  background: color-mix(in oklch, var(--cs-accent-warm) 14%, transparent);
+  box-shadow: inset 3px 0 0 var(--cs-accent-warm);
+}
+.sb-diff-line--unified.sb-diff-line--before.sb-line-highlight {
+  background: color-mix(in oklch, var(--cs-accent-warn) 16%, transparent);
+  box-shadow: inset 3px 0 0 var(--cs-accent-warn);
+}
+.sb-diff-line--unified.sb-diff-line--after.sb-line-highlight {
+  background: color-mix(in oklch, var(--cs-accent-ok) 16%, transparent);
+  box-shadow: inset 3px 0 0 var(--cs-accent-ok);
+}
+
+/* Unified mode — the entire row gets a faint side-tinted background so
+ * the viewer can tell deletions from additions without reading the
+ * +/− glyph every line. The line-highlight rules above stack on top. */
+.sb-diff-line--unified.sb-diff-line--before {
+  background: color-mix(in oklch, var(--cs-accent-warn) 4%, transparent);
+}
+.sb-diff-line--unified.sb-diff-line--after {
+  background: color-mix(in oklch, var(--cs-accent-ok) 4%, transparent);
+}
+
+/* Column pulse — warm ring around the whole pane. Used for the
+ * "look at this side" beat (target = "before" or "after"). */
+.sb-diff-col.sb-diff-col-pulse {
+  box-shadow:
+    inset 0 2px 0 transparent,
+    0 0 0 2px var(--cs-accent-warm),
+    0 0 32px color-mix(in oklch, var(--cs-accent-warm) 35%, transparent);
+}
+
+/* Caption — small footer text below the diff body. */
+.sb-diff-caption {
+  padding: var(--cs-s-3) var(--cs-s-6) var(--cs-s-4);
+  font-family: var(--cs-font-ui);
+  font-size: clamp(12px, 1.6cqh, 16px);
+  color: var(--cs-ink-3);
+  text-align: center;
+  border-top: 1px solid var(--cs-glass-border);
+}
+
+/* Inherit Prism token colors from code-zoom by reusing .sb-code on each
+ * pane <pre>. No new token rules needed; the existing .sb-code .token.*
+ * selectors above match because .sb-diff-pre carries .sb-code as a
+ * sibling class on the same element. */
+
+/* ── risk-matrix ──────────────────────────────────────────────────
+ *
+ * 2×2 triage plot for gotchas — impact (Y) × likelihood (X). SVG plot
+ * sits on the left; readable legend with ID badges sits on the right.
+ * Dots drop in on a stagger, each with an inline ID. Quadrant tints
+ * are faint so the dots dominate; quadrant labels are even fainter
+ * corner annotations.
+ *
+ * Surface chrome from .cs-plate; this block owns layout, the SVG
+ * stylesheet, and the reveal/pulse states.
+ */
+
+.sb-risk-wrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--cs-s-5);
+  box-sizing: border-box;
+  color: var(--cs-ink-1);
+  font-family: var(--cs-font-ui);
+  min-height: 0;
+}
+
+.sb-risk-stage {
+  position: relative;
+  width: 100%;
+  max-width: var(--sb-stage-w-max);
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.sb-risk-plate {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  container-type: size;
+  container-name: risk;
+  min-height: 0;
+}
+
+.sb-risk-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--cs-s-3) var(--cs-s-6);
+  border-bottom: 1px solid var(--cs-glass-border);
+}
+
+.sb-risk-eyebrow { letter-spacing: 0.14em; }
+.sb-risk-tag { white-space: nowrap; }
+
+.sb-risk-title {
+  margin: 0;
+  padding: var(--cs-s-4) var(--cs-s-6) 0;
+  font-family: var(--cs-font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(28px, 5cqh, 48px);
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  color: var(--cs-ink-1);
+}
+
+/* Body — grid (left, ~60%) + legend (right, ~40%). On small stages the
+ * grid keeps its square aspect via the SVG's preserveAspectRatio, so
+ * the right column gets the remaining space. */
+.sb-risk-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: var(--cs-s-6);
+  padding: var(--cs-s-4) var(--cs-s-6) var(--cs-s-6);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sb-risk-grid-wrap {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sb-risk-svg {
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+/* Quadrant tints — faint categorical fills behind the plot. The top-
+ * right is warn-tinted because that quadrant is the "Address first"
+ * zone by convention. The top-left is cool-tinted (high impact but
+ * rare); bottom-right is warn-dim; bottom-left is neutral glass.
+ *
+ * Opacity stays low (4–6%) so the dots and grid lines dominate. */
+.sb-risk-quad--tr { fill: var(--cs-accent-warn); opacity: 0.07; }
+.sb-risk-quad--tl { fill: var(--cs-accent-cool); opacity: 0.05; }
+.sb-risk-quad--br { fill: var(--cs-accent-warn); opacity: 0.025; }
+.sb-risk-quad--bl { fill: var(--cs-ink-2);       opacity: 0.025; }
+
+.sb-risk-quad-label {
+  font-family: var(--cs-font-mono);
+  font-size: 2.4px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  fill: var(--cs-ink-3);
+  opacity: 0.55;
+}
+
+/* Axis lines — frame solid at ~50% glass border; midlines dashed at
+ * the centre so the four quadrants are visually delineated without
+ * dominating. */
+.sb-risk-axis {
+  stroke: var(--cs-glass-border);
+  stroke-width: 0.4;
+  fill: none;
+}
+.sb-risk-axis-mid {
+  stroke: var(--cs-ink-4);
+  stroke-width: 0.25;
+  stroke-dasharray: 1 1;
+  fill: none;
+  opacity: 0.6;
+}
+
+.sb-risk-tick {
+  font-family: var(--cs-font-mono);
+  font-size: 3.2px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  fill: var(--cs-ink-3);
+}
+
+.sb-risk-axis-label {
+  font-family: var(--cs-font-mono);
+  font-size: 2.8px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  fill: var(--cs-ink-2);
+}
+
+/* Dots — <g> wrapper carries the transform and the reveal/emphasize
+ * classes; halo + core circle + id text are children. The halo grows
+ * during emphasize; the core stays put. */
+.sb-risk-dot {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: opacity .45s ease, transform .45s ease;
+}
+
+.sb-risk-dot.sb-visible {
+  opacity: 1;
+  /* drop-in entrance — the dot starts slightly above and settles. */
+  animation: sb-risk-drop .6s cubic-bezier(0.2, 0.9, 0.25, 1.15);
+}
+
+@keyframes sb-risk-drop {
+  0%   { transform: translateY(-12px); opacity: 0; }
+  60%  { transform: translateY(1px);   opacity: 1; }
+  100% { transform: translateY(0);     opacity: 1; }
+}
+
+.sb-risk-dot-halo {
+  fill: var(--cs-accent-warm);
+  opacity: 0;
+  transition: opacity .3s ease, r .3s ease;
+}
+
+.sb-risk-dot-core {
+  fill: var(--cs-accent-warm);
+  stroke: var(--cs-bg-0);
+  stroke-width: 0.6;
+}
+
+.sb-risk-dot-id {
+  font-family: var(--cs-font-mono);
+  font-size: 3.4px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  fill: var(--cs-bg-0);
+  pointer-events: none;
+}
+
+/* Pulse — the runtime emphasize verb on a dot. Halo blooms, core stays
+ * tight, and an inner ring expands. Cleared after 1.4s by the
+ * template, so this is just the visual side of the contract. */
+.sb-risk-dot.sb-emphasize .sb-risk-dot-halo {
+  opacity: 0.45;
+  r: 10;
+}
+.sb-risk-dot.sb-emphasize .sb-risk-dot-core {
+  filter: drop-shadow(0 0 1px var(--cs-accent-warm))
+          drop-shadow(0 0 2px var(--cs-accent-warm));
+}
+
+/* SVG plot wrapper reveal — fades the whole grid in before the dots
+ * stagger. */
+.sb-risk-svg {
+  opacity: 0;
+  transition: opacity .55s ease;
+}
+.sb-risk-svg.sb-visible { opacity: 1; }
+
+/* ── Legend ──
+ *
+ * One row per risk — the readable counterpart to the dot grid. Each
+ * row gets its own ID badge so a viewer scanning the legend can
+ * connect "R1" in the dot to "R1" here. Click-equivalent emphasize
+ * fires on both. */
+.sb-risk-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--cs-s-3);
+  align-content: start;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.sb-risk-legend-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--cs-s-3);
+  padding: var(--cs-s-2) var(--cs-s-3);
+  border-radius: var(--cs-r-m);
+  border: 1px solid transparent;
+  transition: border-color .3s ease, box-shadow .3s ease, background-color .3s ease;
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.sb-risk-legend-row.sb-visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity .45s ease, transform .45s ease,
+              border-color .3s ease, box-shadow .3s ease, background-color .3s ease;
+}
+
+.sb-risk-legend-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2em;
+  height: 2.2em;
+  border-radius: 50%;
+  background: var(--cs-accent-warm);
+  color: var(--cs-bg-0);
+  font-family: var(--cs-font-mono);
+  font-size: clamp(11px, 1.5cqh, 13px);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.sb-risk-legend-body {
+  display: grid;
+  gap: 0.3em;
+  min-width: 0;
+}
+
+.sb-risk-legend-label {
+  font-family: var(--cs-font-ui);
+  font-size: clamp(14px, 2.2cqh, 19px);
+  color: var(--cs-ink-1);
+  line-height: 1.25;
+  text-wrap: pretty;
+}
+
+.sb-risk-legend-cite {
+  font-family: var(--cs-font-mono);
+  font-size: clamp(10px, 1.4cqh, 13px);
+  color: var(--cs-ink-3);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Pulse — legend row twin to the dot pulse. Warm border + bloom. */
+.sb-risk-legend-row.sb-emphasize {
+  border-color: var(--cs-accent-warm);
+  background: color-mix(in oklch, var(--cs-accent-warm) 8%, transparent);
+  box-shadow:
+    0 0 0 2px color-mix(in oklch, var(--cs-accent-warm) 60%, transparent),
+    0 0 24px color-mix(in oklch, var(--cs-accent-warm) 25%, transparent);
+}
+
+/* Header / title reveal. */
+.sb-risk-header,
+.sb-risk-title {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .55s ease, transform .55s ease;
+}
+
+.sb-risk-header.sb-visible,
+.sb-risk-title.sb-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+

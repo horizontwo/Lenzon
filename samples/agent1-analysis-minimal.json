@@ -1,0 +1,57 @@
+{
+  "_comment": "MINIMAL teaching sample. A trimmed AnalysisJSON (the Agent 1 / Code Analysis output) for a small fictional CLI. It plausibly produces agent2-script-minimal.json. Conforms to AnalysisJSON in @lenzon/shared-types (packages/shared-types/src/analysis.ts). codeQuality/health are optional and omitted here to keep it small.",
+  "quickFacts": {
+    "repoUrl": "https://github.com/example/leaflet-cli",
+    "languages": ["TypeScript"],
+    "framework": "Node.js CLI (commander)",
+    "buildTool": "tsup",
+    "totalFiles": 18,
+    "totalLines": 1420,
+    "notableDependencies": [
+      { "name": "commander", "purpose": "Parses CLI arguments and dispatches subcommands." },
+      { "name": "chalk", "purpose": "Colorizes terminal output." },
+      { "name": "fast-glob", "purpose": "Walks the filesystem to find Markdown files." }
+    ]
+  },
+  "architecture": {
+    "summary": "A small command-line tool that turns a folder of Markdown notes into a static HTML site. A single entry point parses arguments, a scanner collects files, and a renderer writes HTML. There is no server or database.",
+    "entryPoints": [
+      { "file": "src/cli.ts", "role": "Parses argv and dispatches to the build command." }
+    ],
+    "modules": [
+      { "name": "CLI", "path": "src/cli.ts", "responsibility": "Argument parsing and command dispatch.", "dependsOn": ["Scanner", "Renderer"] },
+      { "name": "Scanner", "path": "src/scan.ts", "responsibility": "Finds Markdown files under the input directory.", "dependsOn": [] },
+      { "name": "Renderer", "path": "src/render.ts", "responsibility": "Converts Markdown to HTML and writes output files.", "dependsOn": ["Scanner"] }
+    ],
+    "dataFlow": [
+      {
+        "name": "Build a site",
+        "steps": [
+          { "actor": "User", "action": "Runs `leaflet build ./notes`", "file": "src/cli.ts" },
+          { "actor": "Scanner", "action": "Globs ./notes for *.md files", "file": "src/scan.ts" },
+          { "actor": "Renderer", "action": "Renders each file to HTML", "file": "src/render.ts" },
+          { "actor": "Renderer", "action": "Writes the HTML into ./dist", "file": "src/render.ts" }
+        ]
+      }
+    ]
+  },
+  "plainEnglish": {
+    "oneLiner": "A command-line tool that turns a folder of Markdown notes into a small website.",
+    "fullExplanation": "Leaflet CLI is a tiny utility for people who keep notes in Markdown. You point it at a folder and it produces a folder of HTML you can host anywhere. It does one thing: read Markdown, write HTML. There is no account system, no database, and no server — it runs once and exits.",
+    "userJourneys": [
+      { "name": "First build", "narrative": "A writer installs the tool, runs it against their notes folder, and gets a ready-to-host site in seconds." }
+    ]
+  },
+  "community": {
+    "lastCommitDate": "2026-05-30",
+    "daysSinceLastCommit": 22,
+    "commitsLast30Days": 9,
+    "commitsLast90Days": 31,
+    "commitsLast365Days": 88,
+    "uniqueContributorsLast90Days": 2,
+    "totalContributors": 4,
+    "branchCount": 2,
+    "tagCount": 6,
+    "activitySignal": "active"
+  }
+}

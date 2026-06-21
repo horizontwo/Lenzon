@@ -1,0 +1,35 @@
+%% Lenzon — Agent data flow (current state)
+%% Source of truth: ARCHITECTURE.md, AGENT-1-TUNABLES.md
+flowchart TD
+    URL([GitHub repo URL + user settings]) --> A1A
+
+    subgraph AGENT1["Agent 1 — Analysis (two-stage)"]
+        A1A["Agent 1a — Triage (Haiku)<br/>tree + README + manifests only<br/>~30s"]
+        A1A -->|TriageReport| MODAL{{"Triage Modal<br/>user picks AnalysisMode"}}
+        MODAL -->|"overview / focused-brief /<br/>scorecard / walkthrough"| A1B
+        A1B["Agent 1b — Analysis (Haiku*)<br/>bash + glob + grep + read<br/>mode-scoped file budget<br/>2–10 min"]
+    end
+
+    A1B -->|"AnalysisJSON<br/>(quickFacts, architecture,<br/>codeQuality, plainEnglish, health)"| A2
+
+    SETTINGS([UserSettings:<br/>audience / detail / pace<br/>persona / voice]) --> A2
+
+    subgraph AGENT2["Agent 2 — Producer / Director (Messages API)"]
+        A2["produceScript()<br/>static system prompt +<br/>analysis JSON + settings<br/>→ submit_presentation_script tool"]
+    end
+
+    A2 -->|PresentationScript JSON| PLAYER
+
+    subgraph CLIENT["Client runtime"]
+        PLAYER["ScriptPlayer<br/>scene-by-scene playback"]
+        PLAYER --> CANVAS["Canvas layer<br/>(TextBox, fx, emphasis)"]
+        PLAYER --> DOM["DOM layer<br/>(code, bullets, cloud, grid)"]
+        PLAYER --> THREED["3D layer<br/>(flow / dependency diagrams)"]
+        PLAYER --> VOICE["VoicePlayer<br/>ElevenLabs / Kokoro TTS"]
+    end
+
+    %% Re-render economics
+    SETTINGS -.->|"change persona/pace/audience<br/>→ re-run Agent 2 only"| A2
+    MODAL -.->|"change mode<br/>→ re-run Agent 1b<br/>(triage reusable)"| A1B
+
+    %% * analysis flipped to Haiku 4.5 on 2026-06-04; see COST-AND-ECONOMICS.md

@@ -1,0 +1,19 @@
+{
+  "name": "lenzon",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Lenzon monorepo root. Installs the workspace and runs the player's template sandbox locally.",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/player"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @lenzon/player",
+    "build": "npm run build -w @lenzon/player",
+    "typecheck": "npm run typecheck -w @lenzon/player"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
