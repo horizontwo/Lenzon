@@ -1,6 +1,9 @@
 # Lenzon
 
-Check out [Our Lenzon Created Lenzon Walkthrough](https://www.lenzon.ai/viewer/cmqo9zi2z0000o9zdphhvuq3c?voice=google-chirp3 "Lenzon Walkthrough"){:target="_blank"}.
+
+<a href="https://www.lenzon.ai/viewer/cmqo9zi2z0000o9zdphhvuq3c?voice=google-chirp3" target="_blank">Check out our Lenzon created Lenzon Walkthrough</a>
+
+
 
 Lenzon turns a GitHub repository or pull request into a **narrated, animated
 codebase explainer**; a short, scene-by-scene presentation that walks through
