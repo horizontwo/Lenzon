@@ -1,0 +1,7 @@
+I would like to build some analogy templates:
+AI often uses an airport terminal 
+We could use a fish pond
+traffic sign, bridge 
+post office ...
+I think there's lots more
+it would be nice to have these stylized consistantly 

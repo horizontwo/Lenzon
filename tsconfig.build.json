@@ -1,0 +1,18 @@
+{
+  "//": "Declarations only. Vite writes the JS (vite.lib.config.ts); this writes the matching .d.ts beside it. It starts from the library entries, not all of src, so the demo host (main.tsx, App.tsx) stays out of dist.",
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": [
+    "src/vite-env.d.ts",
+    "src/index.ts",
+    "src/templates/index.ts",
+    "src/templates/registry.ts",
+    "src/player/capture/captureMode.ts"
+  ]
+}
