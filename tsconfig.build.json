@@ -1,0 +1,10 @@
+{
+  "//": "Publish build. Emits dist/ with declarations. The server and the player consume this output, not src/, because it is exactly what an npm consumer gets.",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  }
+}
