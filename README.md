@@ -13,6 +13,8 @@ build a tool that does.
 npm i @lenzon/player @lenzon/explainer-format react react-dom
 ```
 
+React 18 and React 19 both work.
+
 ## Play a script
 
 ```tsx
@@ -45,6 +47,21 @@ export function Explainer() {
 
 `WebSpeechVoicePlayer` reads the narration with the browser's own voice.
 `StubVoicePlayer` plays silently on a timer.
+
+The stylesheet brings its own fonts. They sit beside it in the package,
+and your bundler picks them up from the import. You serve nothing.
+
+## Intro and outro
+
+A script plays with no intro or outro by default. To add one, pass a
+Lottie animation's URL as the fifth argument:
+
+```tsx
+new ScriptPlayer(script, presenter, voice, {}, { chrome: { intro: '/my-intro.lottie' } });
+```
+
+`intro: true` plays the animation bundled with the player, which is
+Lenzon's logo.
 
 ## What is in the package
 

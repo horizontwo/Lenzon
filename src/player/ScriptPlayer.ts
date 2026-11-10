@@ -114,16 +114,14 @@ export class ScriptPlayer {
 
   private resolveIntroSrc(): string | null {
     const v = this.chrome.intro;
-    if (v === false) return null;
     if (typeof v === 'string') return v;
-    return getDefaultIntroSrc();
+    return v === true ? getDefaultIntroSrc() : null;
   }
 
   private resolveOutroSrc(): string | null {
     const v = this.chrome.outro;
-    if (v === false) return null;
     if (typeof v === 'string') return v;
-    return getDefaultOutroSrc();
+    return v === true ? getDefaultOutroSrc() : null;
   }
 
   get state(): PlayerState {

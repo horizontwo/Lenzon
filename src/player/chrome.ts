@@ -1,8 +1,16 @@
 import introData from '../assets/lenzon_logo_intro.json';
 
+/**
+ * The Lottie bookends around a script. Each takes a URL to play, `true`
+ * for the one bundled with the player, or `false` for none.
+ *
+ * Both are off unless asked for. The bundled intro is Lenzon's logo, and
+ * a stranger playing their own script should not get our branding without
+ * choosing it. Lenzon's own hosts pass `intro: true`.
+ */
 export interface ChromeConfig {
-  intro?: string | false;
-  outro?: string | false;
+  intro?: string | boolean;
+  outro?: string | boolean;
 }
 
 let cachedIntroUrl: string | null = null;

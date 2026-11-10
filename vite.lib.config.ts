@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { copyFileSync } from 'node:fs';
+import { copyFileSync, cpSync } from 'node:fs';
 import pkg from './package.json' with { type: 'json' };
 
 // The library build: what npm publishes and what the server consumes.
@@ -27,9 +27,14 @@ export default defineConfig({
       // index.ts deliberately does not import index.css, so the consumer
       // decides where the stylesheet lands. That leaves nothing for Vite to
       // extract, so the stylesheet is copied across as-is.
+      //
+      // The fonts go with it, to the same relative path. The stylesheet
+      // names them as `./fonts/...`, so the consumer's bundler finds them
+      // beside `styles.css` without the host serving anything.
       name: 'copy-stylesheet',
       writeBundle() {
         copyFileSync('src/index.css', 'dist/styles.css');
+        cpSync('src/fonts', 'dist/fonts', { recursive: true });
       },
     },
   ],
