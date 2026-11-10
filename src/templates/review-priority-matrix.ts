@@ -288,6 +288,8 @@ function applyCap(
 export const reviewPriorityMatrixTemplate: Template = {
   id: 'review-priority-matrix',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: '"quadrant:topRight" (or topLeft, bottomRight, bottomLeft) lights a cell and its dots. "pr:<number>" or a bare number pulses one PR. A "reveal:" prefix shows before it pulses',
   description:
     'Reading plan for a series under one lens — a 2×2 of impact × ' +
     'review-worthiness with one dot per PR. The lens (security, correctness, ' +

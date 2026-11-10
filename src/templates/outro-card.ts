@@ -192,6 +192,8 @@ function normalizeObservation(c: OutroCardContent): ObservationKind {
 export const outroCardTemplate: Template = {
   id: 'outro-card',
   version: '2.1.0',
+  use: 'code',
+  emphasizeTargets: '"takeaway", "observation", "nextSteps" or "brand"',
   description:
     'Closing slide of a PR-explainer run. Bookends pr-title-card with the ' +
     'same glass plate, brand mark, and footer language. Anchored by an ' +

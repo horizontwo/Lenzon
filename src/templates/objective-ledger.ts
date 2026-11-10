@@ -173,6 +173,8 @@ function allocate(sizes: number[], budget: number): number[] {
 export const objectiveLedgerTemplate: Template = {
   id: 'objective-ledger',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: '"pr:<number>", "era:<label>", or a row by flat 0-based index ("item:3" or "3")',
   description:
     'The "what got done" beat of a series explainer: objectives from many ' +
     'PRs rolled into one ledger, grouped by era, each line attributed to ' +

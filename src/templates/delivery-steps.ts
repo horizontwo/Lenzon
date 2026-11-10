@@ -114,6 +114,8 @@ function normalizeLevel(raw: unknown): string | null {
 export const deliveryStepsTemplate: Template = {
   id: 'delivery-steps',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: 'a step by 0-based index, "pr:<n>", "target" or "declared"',
   description:
     'The PRs that built a planning doc, drawn as a staircase climbing to ' +
     'the doc itself: each step a card saying what that PR added, with its ' +

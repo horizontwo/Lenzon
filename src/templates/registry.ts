@@ -34,6 +34,19 @@ export interface Template {
    */
   version: string;
   /**
+   * Who the template suits. 'any' works for explaining any idea, a business
+   * plan as well as a codebase. 'code' only makes sense for software, such
+   * as a diff or a PR title card. Required so a new template has to say.
+   * The generated TEMPLATES.md lists the 'any' templates first.
+   */
+  use: 'any' | 'code';
+  /**
+   * What a beat's `{ type: 'emphasize', target }` can name in this
+   * template, in plain words. Like `slots`, it is read by people and models
+   * writing scripts, and TEMPLATES.md prints it.
+   */
+  emphasizeTargets?: string;
+  /**
    * Machine-readable schema hint. Not validated here — intended for an
    * agent tool-discovery endpoint that wants to tell a model what slots
    * this template takes.

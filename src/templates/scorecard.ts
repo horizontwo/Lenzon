@@ -65,6 +65,8 @@ function gradeScore(grade: string): number {
 export const scorecardTemplate: Template = {
   id: 'scorecard',
   version: '1.0.0',
+  use: 'any',
+  emphasizeTargets: 'an item, by 0-based index',
   description:
     'Report card grid with a large overall letter grade and per-metric severity bars inside glass plates.',
   slots: {

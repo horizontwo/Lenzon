@@ -51,11 +51,13 @@ type TreeStyle = 'tree' | 'indented' | 'explorer';
 export const directoryTreeTemplate: Template = {
   id: 'directory-tree',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: 'a full path ("src/utils/auth.ts") or a bare name ("auth.ts")',
   description:
     'Repository/directory structure view inside a glass plate. For showing how a project is organized, which folders matter. Calm/static after the depth-stagger reveal.',
   slots: {
     root: 'string — optional root label shown at the top',
-    tree: 'TreeNode[] — { name, badge?, note?, highlight?, children? }',
+    tree: 'TreeNode[] — { name, badge?, note?, highlight?, children? }. A name ending in "/" is a folder, and so is a node with children. badge is short pill text, note a dim caption, highlight an accent stripe',
     maxDepth: 'number — collapse deeper levels (default 3)',
     staggerMs: 'number — per-depth reveal delay (default 200)',
     style: '"tree" | "indented" | "explorer" (default "tree")',

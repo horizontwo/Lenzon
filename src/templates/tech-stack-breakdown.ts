@@ -88,8 +88,10 @@ const CATEGORY_ORDER: TechCategory[] = [
 export const techStackBreakdownTemplate: Template = {
   id: 'tech-stack-breakdown',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: 'a category ("network", "data", "application", "services", "ui", "devops"), or "N:M" for item M of section N, both 0-based',
   description:
-    'Full-bleed grid breaking the repo tech stack into optional standard categories: Network, Data, Application, Services, UI, DevOps. Sections not included by the Director are omitted.',
+    'Full-bleed grid breaking the repo tech stack into optional standard categories: Network, Data, Application, Services, UI, DevOps. Leave out categories the subject does not use; empty ones are never shown.',
   slots: {
     title:    'string — optional headline (defaults to "Tech Stack")',
     sections: 'TechSection[] — { category: network|data|application|services|ui|devops, items: { name, role? }[] }[]',

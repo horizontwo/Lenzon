@@ -49,8 +49,10 @@ const CONNECTORS: Record<string, string> = {
 export const transformGridTemplate: Template = {
   id: 'transform-grid',
   version: '1.0.0',
+  use: 'any',
+  emphasizeTargets: 'a stage, by 0-based index or by its label',
   description:
-    'Horizontal pipeline of stages in nested glass plates that reveal left-to-right with connector glyphs. Stages can show code or text.',
+    'Horizontal pipeline of stages in nested glass plates that reveal left-to-right with connector glyphs. Stages can show code or text. It implies a sequence, stage 1 then 2 then 3. For two alternatives side by side, use compare-split.',
   slots: {
     title: 'string — optional headline above the grid',
     stages: '{ label: string, display: { type: "code"|"text", code?, text?, language? } }[]',

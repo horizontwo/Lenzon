@@ -96,6 +96,8 @@ function countsLabel(states: DecisionState[]): string {
 export const decisionLedgerTemplate: Template = {
   id: 'decision-ledger',
   version: '1.0.0',
+  use: 'any',
+  emphasizeTargets: 'a row by 0-based index ("2" or "item:2"), or "state:<state>" for every row in that state, such as "state:open"',
   description:
     "A plan's decisions, each marked settled, chosen, rejected or open. " +
     'Settled, chosen and rejected rows may carry a date and a one-line why; ' +

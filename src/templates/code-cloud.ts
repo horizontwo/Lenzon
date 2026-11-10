@@ -42,8 +42,10 @@ interface CodeCloudContent {
 export const codeCloudTemplate: Template = {
   id: 'code-cloud',
   version: '1.0.0',
+  use: 'any',
+  emphasizeTargets: 'an item, by its text, in any case',
   description:
-    'Weighted DOM word cloud for code concepts inside a glass plate. Scatter / spiral / typewriter entrance; gentle float after placement (opt-in).',
+    'Weighted DOM word cloud for concepts inside a glass plate. Scatter / spiral / typewriter entrance; gentle float after placement (opt-in).',
   slots: {
     items: '{ text: string, weight: number, category: string }[] — cloud items',
     categoryColors: 'Record<string, string> — category → color (CSS, var(--cs-*), or palette.* alias)',

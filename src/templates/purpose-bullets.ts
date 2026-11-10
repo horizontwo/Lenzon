@@ -53,10 +53,12 @@ const TYPE_TONE: Record<SupportItem['type'], 'cool' | 'ink' | 'warn' | 'ok'> = {
 export const purposeBulletsTemplate: Template = {
   id: 'purpose-bullets',
   version: '1.0.0',
+  use: 'any',
+  emphasizeTargets: 'a support point, by 0-based index or by a piece of its text',
   description:
     'Purpose statement on canvas with typed supporting evidence in a glass plate. File reference badge optional.',
   slots: {
-    purpose: 'string — the main purpose headline, rendered on canvas',
+    purpose: 'string — the main purpose headline, rendered on canvas. A tagline of 3–5 words, about 25 characters, so it fits on one line. It is drawn at a fixed 96px, so a longer one wraps, and on a small stage its top line is cut off. Detail belongs in supports',
     fileRef: 'string — optional file path shown as a badge',
     supports: 'SupportItem[] — { point: string, type: feature|detail|concern|strength }',
     purposeFx: 'EffectSpec[] — optional entrance effects for the purpose text',

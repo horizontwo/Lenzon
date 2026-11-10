@@ -1,0 +1,90 @@
+/* The play page's own layout. Everything inside the stage is the player's
+ * stylesheet; this only frames it. */
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #05070b;
+  color: #e6e8ee;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+.lp-page {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* The largest 16:9 box that leaves room for the controls below it. */
+.lp-stage {
+  position: relative;
+  width: min(100%, calc((100vh - 96px) * 16 / 9));
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #000;
+}
+
+.lp-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: min(100%, calc((100vh - 96px) * 16 / 9));
+  font-size: 14px;
+}
+
+.lp-controls button {
+  min-width: 112px;
+  padding: 8px 16px;
+  border: 1px solid #3a4150;
+  border-radius: 6px;
+  background: #151a23;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.lp-controls button:hover {
+  background: #1d2430;
+}
+
+.lp-count {
+  color: #9aa3b2;
+  font-variant-numeric: tabular-nums;
+}
+
+.lp-title {
+  margin-left: auto;
+  color: #9aa3b2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lp-problems {
+  max-width: 640px;
+  line-height: 1.5;
+}
+
+.lp-problems h1 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.lp-problems li {
+  margin: 6px 0;
+}
+
+.lp-problems p {
+  color: #9aa3b2;
+}

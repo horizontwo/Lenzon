@@ -87,6 +87,8 @@ function prKey(raw: string | number | undefined): string {
 export const constraintWallTemplate: Template = {
   id: 'constraint-wall',
   version: '1.0.0',
+  use: 'any',
+  emphasizeTargets: 'a card by 0-based index ("item:2" or "2"), or "pr:<number>" for every card from that PR',
   description:
     'The "what we refused to do" beat of a series explainer: constraint ' +
     'objectives rendered as a wall of deliberate refusals, each card ' +

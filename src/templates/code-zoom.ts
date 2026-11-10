@@ -40,6 +40,8 @@ interface CodeZoomContent {
 export const codeZoomTemplate: Template = {
   id: 'code-zoom',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: 'a line, by its 1-based number ("3")',
   description: 'Code block in a sunken glass plate that zooms in from small, with optional line highlighting and warm pulse.',
   slots: {
     code: 'string — code to display',

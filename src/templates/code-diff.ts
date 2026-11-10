@@ -200,6 +200,8 @@ function renderUnifiedPane(
 export const codeDiffTemplate: Template = {
   id: 'code-diff',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: '"before:N", "after:N" or "pair:N" lights line N on one side or both, and stays lit. "before" or "after" pulses a whole side. "clear" resets',
   description:
     'Before/after view of a hunk. Split mode renders two columns side by ' +
     'side (preferred when line correspondence matters); unified mode renders ' +

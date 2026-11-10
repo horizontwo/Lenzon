@@ -124,8 +124,10 @@ function normalize(c: TitleCardContent): {
 export const titleCardTemplate: Template = {
   id: 'title-card',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: '"repo", "blurb", "kicker", "date" or "commit"',
   description:
-    'Opening slide of an analysis: a single full-bleed glass plate with a kicker, org/repo display headline, optional blurb, and a meta footer (analysis date, commit · branch).',
+    'Opening slide of an analysis: a single full-bleed glass plate with a kicker, org/repo display headline, optional blurb, and a meta footer (analysis date, commit · branch). Use it as the first scene of an explainer about one repo.',
   slots: {
     org: 'string — owner / organization shown above the repo name',
     repo: 'string — repository name, the largest type on the plate',

@@ -85,6 +85,8 @@ function fmtSigned(n: number, kind: 'add' | 'del'): string {
 export const prTitleCardTemplate: Template = {
   id: 'pr-title-card',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: '"prTitle", "prNumber", "stats", "labels" or "author"',
   description:
     'Opening slide of a PR-explainer run. Glass plate anchored by an italic ' +
     'PR title and a giant mono PR number, with org/repo breadcrumb, branch ' +

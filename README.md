@@ -5,7 +5,31 @@ explainer.
 
 The script format is its own package, `@lenzon/explainer-format`. Lenzon's
 pipeline is one thing that writes scripts. You can write one by hand, or
-build a tool that does.
+ask an agent to, or build a tool that does.
+
+## Write your first script
+
+```bash
+npx @lenzon/player new my-idea.json
+npx @lenzon/player play my-idea.json
+```
+
+`new` writes a short script that already plays. Change its words and
+reload the page. `npx @lenzon/player check my-idea.json` lists what is
+wrong with a script, in the terminal.
+
+Two guides ship in this package, beside this README.
+
+- `WRITING-SCRIPTS.md` goes from an empty file to a good script. It
+  covers story, narration, timing and beats, and ends with a worked
+  example that is not about code.
+- `TEMPLATES.md` lists every template, its slots, and an example of each.
+  The ones that suit any idea come first.
+
+An agent asked to write a script should read both first. For Claude
+Code, `npx @lenzon/player skill` installs a skill that does, into this
+project's `.claude/skills/lenzon-explainer/`. Then ask for an explainer.
+Run it again after upgrading the player, to refresh the guides beside it.
 
 ## Install
 
@@ -15,6 +39,29 @@ npm i @lenzon/player @lenzon/explainer-format react react-dom
 
 React 18 and React 19 both work.
 
+## Play a script file
+
+To watch a script you already have, you need no app at all:
+
+```bash
+npx @lenzon/player play my-script.json
+```
+
+It opens the script in your browser, served from your own machine. Press
+Play to start, since browsers will not speak until you click. Edit the
+file and reload the page to see the change.
+
+- A scene with a `narrationAudioUrl` plays that file. A relative URL is
+  read from beside the script. Other scenes use the browser's own voice.
+- `--silent` plays with no voice, on a timer.
+- `--no-open` prints the address without opening a browser.
+- `--port <n>` picks the port.
+
+If a scene names a template the player does not have, the page lists it
+and does not play.
+
+To put a script inside your own app instead, read on.
+
 ## Play a script
 
 ```tsx
@@ -23,14 +70,14 @@ import type { PresentationScript } from '@lenzon/explainer-format';
 import '@lenzon/player/styles.css';
 
 const script: PresentationScript = {
-  meta: { title: 'Hello', repoUrl: '', generatedAt: '2026-11-08', persona: 'friendly', estimatedDuration: 6 },
+  meta: { title: 'Hello', generatedAt: '2026-11-08', persona: 'friendly', estimatedDuration: 6 },
   defaults: {
     palette: { primary: '#3b82f6', secondary: '#a855f7', accent: '#f59e0b', background: '#0f172a', text: '#f8fafc', code: '#94a3b8' },
     transition: { type: 'fade', durationMs: 400 },
     voice: { provider: 'stub', voiceId: 'browser', speed: 1 },
   },
   scenes: [{
-    id: 'hello', section: 'plainEnglish', holdSeconds: 6,
+    id: 'hello', holdSeconds: 6,
     narration: 'This explainer was written by hand.',
     primitive: { template: 'title-bullets', content: { title: 'Hello', bullets: ['Written by hand', 'Played by @lenzon/player'] } },
   }],
@@ -72,10 +119,11 @@ Lenzon's logo.
 | `@lenzon/player/templates` | The built-in templates. Importing the root registers them already. |
 | `@lenzon/player/templates/registry` | `registerTemplate`, for adding your own. |
 | `@lenzon/player/capture` | Deterministic frame stepping, for recording a script to video. |
-| `@lenzon/player/samples` | Three sample scripts, as plain data. Safe to import on a server. |
+| `@lenzon/player/samples` | Four sample scripts, as plain data. Safe to import on a server. `sampleScripts.idea` is the guide's worked example. |
 
-Each template documents its content slots in a comment at the top of its
-source file under `src/templates/`.
+Each template's content slots are listed in `TEMPLATES.md`. The same
+text is on each template in the registry, as `slots`, for a tool that
+wants to read it.
 
 ## Where this comes from
 

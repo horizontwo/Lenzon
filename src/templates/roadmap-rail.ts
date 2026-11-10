@@ -161,6 +161,8 @@ function layOut(c: RoadmapRailContent): {
 export const roadmapRailTemplate: Template = {
   id: 'roadmap-rail',
   version: '1.0.0',
+  use: 'any',
+  emphasizeTargets: 'a post, by 0-based index. The road pans to centre it, and it pulses',
   description:
     'A roadmap as one road wider than the stage. Sign posts carry a status; each beat pans to a post and the pan holds.',
   slots: {

@@ -96,6 +96,8 @@ function daysBetween(a: string, b: string): number {
 export const repoPulseTemplate: Template = {
   id: 'repo-pulse',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: '"signal", "stats" or "contributors", or a contributor by 0-based index',
   description:
     'Community/liveness card: activity signal badge, commit-recency stats, contributor counts, and top contributors. Sourced from AnalysisJSON.community.',
   slots: {

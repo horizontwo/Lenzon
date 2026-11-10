@@ -29,6 +29,8 @@ interface TitleBulletsContent {
 export const titleBulletsTemplate: Template = {
   id: 'title-bullets',
   version: '1.0.0',
+  use: 'any',
+  emphasizeTargets: 'a bullet, by 0-based index ("0", "1", …) or by its exact text',
   description: 'Canvas title in Instrument Serif italic with a staggered DOM numbered list in a glass plate below.',
   slots: {
     title: 'string — the headline, rendered on canvas',

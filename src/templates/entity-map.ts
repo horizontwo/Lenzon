@@ -74,14 +74,16 @@ const CARDINALITY: Record<RelType, { fromMark: string; toMark: string }> = {
 export const entityMapTemplate: Template = {
   id: 'entity-map',
   version: '1.0.0',
+  use: 'any',
+  emphasizeTargets: 'an entity id. It pulses the card and lights its relationship lines',
   description:
     'Friendly ER diagram in nested glass plates: model cards with fields, connected by labeled relationship lines.',
   slots: {
     title: 'string — optional headline',
     entities:
-      '{ id, label, fields?, color?, row?, col? }[] — the models/tables (3–10). row/col are 1-indexed grid coords; omit to auto-pack.',
+      '{ id, label, fields?, color?, row?, col? }[] — the models/tables (3–10). row/col are 1-indexed grid coords; omit to auto-pack. Every entity should appear in at least one relationship, since a lone card reads as an error. Trim the list rather than invent links.',
     relationships:
-      '{ from, to, label, type? }[] — connections between entities; from/to MUST match an entity id',
+      '{ from, to, label, type? }[] — connections between entities. from/to MUST match an entity id, or the line is dropped. label is plain English ("has many", "owns"), not database notation. type (one-to-one|one-to-many|many-to-one|many-to-many) draws the 1/N marks',
     staggerMs: 'number — delay between card reveals (default 300)',
     layout: '"grid" | "hierarchical" — layout strategy (default "grid")',
   },

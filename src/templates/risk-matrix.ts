@@ -125,6 +125,8 @@ function plotWithCollisions(items: RiskItem[]): PlottedItem[] {
 export const riskMatrixTemplate: Template = {
   id: 'risk-matrix',
   version: '1.0.0',
+  use: 'any',
+  emphasizeTargets: 'a risk id to pulse it. "reveal:<id>" shows it',
   description:
     'Triage 2×2 plot for gotchas — impact × likelihood. Each risk renders ' +
     'as an ID-badged dot at (likelihood, impact); colliding dots auto-nudge. ' +

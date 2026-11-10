@@ -461,8 +461,227 @@ export const beatHeavyScript: PresentationScript = {
   ],
 };
 
+/**
+ * An explainer for a business idea, with no code in it. It is the worked
+ * example in WRITING-SCRIPTS.md, which the build copies in from here, so
+ * the guide and this sample cannot differ.
+ *
+ * It leaves out `meta.repoUrl` and every `section`, because neither means
+ * anything outside a code explainer. It uses only templates marked
+ * `use: 'any'`. Hold times and beat times follow the guide's own rules:
+ * about 2.2 spoken words a second, and a beat just after its word.
+ */
+export const ideaScript: PresentationScript = {
+  meta: {
+    title: 'Toolshed — a tool library for one street',
+    generatedAt: '2026-11-10T00:00:00.000Z',
+    persona: 'friendly',
+    estimatedDuration: 135,
+  },
+  defaults: { palette, transition: defaultTransition, voice },
+  scenes: [
+    {
+      id: 'open',
+      primitive: {
+        template: 'emphasis-word',
+        content: { word: 'Toolshed', subtitle: 'A tool library for one street' },
+      },
+      narration:
+        'Here is an idea for a neighborhood tool library. We call it Toolshed. Instead of every house buying the same drill, the street shares one.',
+      holdSeconds: 13,
+    },
+    {
+      id: 'problem',
+      primitive: {
+        template: 'purpose-bullets',
+        content: {
+          purpose: 'Tools sit idle in garages',
+          supports: [
+            { point: 'Most tools get used a few times a year', type: 'concern' },
+            { point: 'Every house buys its own copy', type: 'concern' },
+            { point: 'The space they take up is not free', type: 'detail' },
+          ],
+        },
+      },
+      narration:
+        'Start with the problem. Most tools get used a few times a year, then sit in a garage. Every house on the street buys its own copy. And the space they take up is not free either.',
+      holdSeconds: 19,
+      beats: [
+        { at: 2.1, action: { type: 'emphasize', target: '0' } },
+        { at: 8.5, action: { type: 'emphasize', target: '1' } },
+        { at: 13.5, action: { type: 'emphasize', target: '2' } },
+      ],
+    },
+    {
+      id: 'how',
+      primitive: {
+        template: 'step-journey',
+        content: {
+          title: 'How borrowing works',
+          steps: [
+            { label: 'Browse', detail: 'See what is on the shelf' },
+            { label: 'Reserve', detail: 'Pick the day you need it' },
+            { label: 'Pick up', detail: 'From the shed' },
+            { label: 'Return', detail: 'Within a week' },
+          ],
+        },
+      },
+      narration:
+        'Here is how it works for a member. You browse what is on the shelf, reserve a tool for the day you need it, pick it up from the shed, and bring it back within a week.',
+      holdSeconds: 19,
+      beats: [
+        { at: 4.4, action: { type: 'emphasize', target: '0' } },
+        { at: 7.1, action: { type: 'emphasize', target: '1' } },
+        { at: 11.2, action: { type: 'emphasize', target: '2' } },
+        { at: 14.4, action: { type: 'emphasize', target: '3' } },
+      ],
+    },
+    {
+      id: 'compare',
+      primitive: {
+        template: 'compare-split',
+        content: {
+          title: 'Buying or borrowing',
+          left: {
+            heading: 'Buy a drill',
+            bullets: ['Pay full price', 'Use it twice a year', 'Store it forever'],
+            accent: 'palette.secondary',
+          },
+          right: {
+            heading: 'Borrow from Toolshed',
+            bullets: ['A small yearly fee', 'There when you need it', 'Someone else keeps it working'],
+            accent: 'palette.primary',
+          },
+          divider: 'vs',
+        },
+      },
+      narration:
+        'Compare that with buying. Buying a drill means paying full price for something you use twice a year. Borrowing costs a small yearly fee, and someone else keeps it working.',
+      holdSeconds: 16,
+      beats: [
+        { at: 1.7, action: { type: 'emphasize', target: 'left' } },
+        { at: 8.5, action: { type: 'emphasize', target: 'right' } },
+      ],
+    },
+    {
+      id: 'money',
+      primitive: {
+        template: 'flow-diagram',
+        content: {
+          nodes: [
+            { id: 'members', label: 'Members', group: 'people' },
+            { id: 'store', label: 'Hardware store', group: 'partners' },
+            { id: 'fixers', label: 'Repair volunteers', group: 'people' },
+            { id: 'shed', label: 'Toolshed', group: 'shed' },
+          ],
+          edges: [
+            { from: 'members', to: 'shed', label: 'yearly fee' },
+            { from: 'store', to: 'shed', label: 'older stock' },
+            { from: 'fixers', to: 'shed', label: 'repairs' },
+          ],
+          groups: [
+            { id: 'people', label: 'Neighbors', color: 'palette.primary' },
+            { id: 'partners', label: 'Partners', color: 'palette.secondary' },
+            { id: 'shed', label: 'The library', color: 'palette.accent' },
+          ],
+          layout: 'left-to-right',
+        },
+      },
+      narration:
+        'The money is simple. Members pay a yearly fee. A local hardware store donates older stock, for the goodwill. Volunteers fix what breaks. And Toolshed lends it all back out.',
+      holdSeconds: 16,
+      beats: [
+        { at: 2.1, action: { type: 'emphasize', target: 'members' } },
+        { at: 5.3, action: { type: 'emphasize', target: 'store' } },
+        { at: 8.9, action: { type: 'emphasize', target: 'fixers' } },
+        { at: 11.7, action: { type: 'emphasize', target: 'shed' } },
+      ],
+    },
+    {
+      id: 'risks',
+      primitive: {
+        template: 'risk-matrix',
+        content: {
+          title: 'What could go wrong',
+          items: [
+            { id: 'R1', label: 'Tools come back broken', impact: 0.45, likelihood: 0.75 },
+            { id: 'R2', label: 'Too few members to cover rent', impact: 0.8, likelihood: 0.4 },
+            { id: 'R3', label: 'A tool is never returned', impact: 0.3, likelihood: 0.3 },
+            { id: 'R4', label: 'Someone is hurt using a tool', impact: 0.9, likelihood: 0.15 },
+          ],
+          quadrantLabels: {
+            topRight: 'Plan for first',
+            topLeft: 'Insure against',
+            bottomRight: 'Expect and absorb',
+            bottomLeft: 'Watch',
+          },
+        },
+      },
+      narration:
+        'What could go wrong? Tools will come back broken, so repairs are part of the plan. Too few members would leave the rent unpaid. And an injury is rare but serious, so insurance comes first.',
+      holdSeconds: 18,
+      beats: [
+        { at: 3.9, action: { type: 'emphasize', target: 'R1' } },
+        { at: 8.0, action: { type: 'emphasize', target: 'R2' } },
+        { at: 12.1, action: { type: 'emphasize', target: 'R4' } },
+      ],
+    },
+    {
+      id: 'plan',
+      primitive: {
+        template: 'roadmap-rail',
+        content: {
+          title: 'Getting to a full shed',
+          stretches: [
+            { id: 'pilot', label: 'Pilot' },
+            { id: 'grow', label: 'Grow' },
+            { id: 'stand', label: 'Stand on its own' },
+          ],
+          posts: [
+            { label: 'Twenty tools, one street', stretch: 'pilot', status: 'active' },
+            { label: 'Fifty paying members', stretch: 'pilot', status: 'not-started' },
+            { label: 'A real shed', stretch: 'grow', status: 'not-started' },
+            { label: 'A second neighborhood', stretch: 'grow', status: 'not-started' },
+            { label: 'Fees cover the rent', stretch: 'stand', status: 'not-started' },
+          ],
+          currentPost: 0,
+        },
+      },
+      narration:
+        'The plan starts small. A pilot with twenty tools on one street. Then fifty paying members, and a real shed. A second neighborhood comes next. The goal is the day the fees cover the rent on their own.',
+      holdSeconds: 19,
+      beats: [
+        { at: 2.6, action: { type: 'emphasize', target: '0' } },
+        { at: 6.2, action: { type: 'emphasize', target: '1' } },
+        { at: 8.5, action: { type: 'emphasize', target: '2' } },
+        { at: 9.8, action: { type: 'emphasize', target: '3' } },
+        { at: 12.1, action: { type: 'emphasize', target: '4' } },
+      ],
+    },
+    {
+      id: 'close',
+      primitive: {
+        template: 'title-bullets',
+        content: {
+          title: 'What it takes to start',
+          bullets: ['Twenty donated tools', 'One garage for a summer', 'Ten neighbors willing to try it'],
+        },
+      },
+      narration:
+        'So here is what it takes to start. Twenty donated tools. One garage for a summer. And ten neighbors willing to try it. That is the whole ask.',
+      holdSeconds: 15,
+      beats: [
+        { at: 3.9, action: { type: 'emphasize', target: '0' } },
+        { at: 5.8, action: { type: 'emphasize', target: '1' } },
+        { at: 8.0, action: { type: 'emphasize', target: '2' } },
+      ],
+    },
+  ],
+};
+
 export const sampleScripts = {
   quick: quickScript,
   mixed: mixedScript,
   beatHeavy: beatHeavyScript,
+  idea: ideaScript,
 };

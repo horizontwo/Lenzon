@@ -80,6 +80,8 @@ function parseTarget(target: string): {
 export const prObjectivesTemplate: Template = {
   id: 'pr-objectives',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: 'an objective id to pulse it. "reveal:<id>" shows it, "check:<id>" ticks it off and stays, "uncheck:<id>" undoes that',
   description:
     'Frames what a PR is trying to do as three visually distinct tiers: ' +
     '1–2 primary (largest), 0–4 secondary (medium), 0–3 constraints ' +

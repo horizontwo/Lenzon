@@ -158,13 +158,15 @@ function renderDataBlock(
 export const dataPipelineTemplate: Template = {
   id: 'data-pipeline',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: 'a stage, by 0-based index. The input is not a stage, so "0" is the first transformation',
   description:
     'Animated data transformation pipeline showing actual values flowing through stacked sunken glass cards (map, filter, reduce, etc.).',
   slots: {
     title: 'string — optional headline',
     input: '{ label, data, display? } — the starting data',
     stages:
-      '{ operation, label, result, highlight?, display? }[] — transformation stages (2–5)',
+      '{ operation, label, result, highlight?, display? }[] — transformation stages (2–5); display is "table" | "value" | "breakdown"',
     staggerMs: 'number — delay between stage reveals (default 1500)',
   },
   demo: {

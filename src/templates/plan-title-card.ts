@@ -145,6 +145,8 @@ function finiteInt(n: unknown): number | null {
 export const planTitleCardTemplate: Template = {
   id: 'plan-title-card',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: '"headline", "badge", "grounding", "stats" or "drift"',
   description:
     'Opening slide of a spec-explainer run — one planning doc rather than ' +
     'a PR. Glass plate anchored by an italic doc title and a large L1/L2/L3 ' +

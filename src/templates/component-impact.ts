@@ -319,6 +319,8 @@ function gridFor(count: number): { cols: number; rows: number } {
 export const componentImpactTemplate: Template = {
   id: 'component-impact',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: '"grow" grows every change volume, and is the main beat. "grow:<id>" grows one. "<id>" pulses a block and grows it. "district:<name>" pulses a district. "reset" collapses them',
   description:
     'Relative impact of each component across a series, as a rotating ' +
     'isometric city: a muted baseline volume with the series\' change ' +

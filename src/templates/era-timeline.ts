@@ -168,6 +168,8 @@ function clamp01(n: number): number {
 export const eraTimelineTemplate: Template = {
   id: 'era-timeline',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: '"era:<label>", "pr:<number>" or "axis"',
   description:
     'The spine of a series explainer: a dated horizontal axis with one ' +
     'tick per PR, grouped into labelled era bands coloured by dominant ' +

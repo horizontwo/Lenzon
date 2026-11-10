@@ -40,6 +40,8 @@ interface EmphasisWordContent {
 export const emphasisWordTemplate: Template = {
   id: 'emphasis-word',
   version: '1.0.0',
+  use: 'any',
+  emphasizeTargets: 'any target. It glows the word again',
   description:
     'Large dramatic word on canvas in Instrument Serif italic with optional mono eyebrow subtitle. Built for verdict statements and key reveals.',
   slots: {

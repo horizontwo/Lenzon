@@ -42,6 +42,8 @@ interface StepJourneyContent {
 export const stepJourneyTemplate: Template = {
   id: 'step-journey',
   version: '1.0.0',
+  use: 'any',
+  emphasizeTargets: 'a step, by 0-based index. It lights the step and the line into it',
   description:
     'Horizontal step-by-step journey with numbered circles, labels, and a connecting progress line. Steps light up in sequence.',
   slots: {

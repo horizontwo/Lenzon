@@ -55,6 +55,8 @@ const ROW_TOP_PAD = 24;        // gap between header and first step
 export const sequenceDiagramTemplate: Template = {
   id: 'sequence-diagram',
   version: '1.0.0',
+  use: 'any',
+  emphasizeTargets: 'a step, by 0-based index, or an actor id',
   description:
     'UML sequence diagram: actor lanes across the top, animated arrows between them showing who calls whom and in what order.',
   slots: {

@@ -121,6 +121,8 @@ function plural(n: number, one: string, many: string): string {
 export const seriesTitleCardTemplate: Template = {
   id: 'series-title-card',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: '"headline", "range", "span", "stats" or "gap"',
   description:
     'Opening slide of a series-explainer run — a stretch of work rather ' +
     'than one PR. Glass plate anchored by an italic headline and a mono ' +

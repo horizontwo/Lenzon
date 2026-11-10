@@ -127,6 +127,8 @@ function el<K extends keyof HTMLElementTagNameMap>(
 export const driftCalloutTemplate: Template = {
   id: 'drift-callout',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: '"drawing", "building" or "gap"; a changed file, by path or bare name; or a PR number, "#12" or "12"',
   description:
     'Beat 4 of a spec explainer: where the code moved away from the spec ' +
     'since it was last grounded. A gap band (grounded sha and date → drift ' +

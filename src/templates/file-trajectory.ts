@@ -105,6 +105,8 @@ function splitPath(path: string): { dir: string; base: string } {
 export const fileTrajectoryTemplate: Template = {
   id: 'file-trajectory',
   version: '1.0.0',
+  use: 'code',
+  emphasizeTargets: '"touch:<prNumber>" or "pr:<prNumber>", a node by 0-based index, "path" or "cochange"',
   description:
     'One file and its life across a series: every touch in order, each ' +
     "with the analyst's own description, on a vertical spine with PR ref " +

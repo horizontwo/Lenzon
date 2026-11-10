@@ -59,13 +59,15 @@ interface CompareSplitContent {
 export const compareSplitTemplate: Template = {
   id: 'compare-split',
   version: '1.1.0',
+  use: 'any',
+  emphasizeTargets: '"left" or "right"',
   description:
-    'Side-by-side comparison of two parallel options inside glass plates with a divider. For mode contrasts, analogies, tradeoffs, before/after.',
+    'Side-by-side comparison of two parallel options inside glass plates with a divider. For mode contrasts, analogies, tradeoffs, before/after. Prefer it over transform-grid when the two things are alternatives rather than steps.',
   slots: {
     title: 'string — optional headline above the comparison',
-    left: '{ heading, icon?, bullets?, accent? } — left panel',
+    left: '{ heading, icon?, bullets?, accent? } — left panel. accent is a CSS color or palette.primary|secondary|accent',
     right: '{ heading, icon?, bullets?, accent? } — right panel',
-    divider: '"vs" | "or" | "→" | "none" (default "vs")',
+    divider: '"vs" | "or" | "→" | "none" (default "vs"; use "→" for before/after)',
     staggerMs: 'number — delay between reveals (default 400)',
     chosen:
       '"left" | "right" — optional; the side a decision picked. Moves the ' +

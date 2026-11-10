@@ -45,11 +45,13 @@ interface CenterStageContent {
 export const centerStageTemplate: Template = {
   id: 'center-stage',
   version: '1.0.0',
+  use: 'any',
+  emphasizeTargets: 'an orbiting term, by 0-based index or by its text',
   description:
     'Central concept on canvas in Instrument Serif italic with related terms orbiting around it. Weight drives size and ink brightness.',
   slots: {
     center: '{ text: string, size?: number } — the central concept',
-    orbiting: '{ text: string, weight: number }[] — satellite terms (weight 0-1)',
+    orbiting: '{ text: string, weight: number }[] — satellite terms (weight 0-1). Use 4–6 terms of one short word each. Terms are sized by weight alone and never measured, so two-word terms, or weights above 0.7 on long words, overlap each other and the center',
     staggerMs: 'number — delay between orbiter entrances (default 200)',
     orbitSpeed: 'number — radians/frame for slow rotation (default 0 = static)',
     centerFx: 'EffectSpec[] — entrance effects for the center word',

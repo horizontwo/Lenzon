@@ -68,6 +68,8 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 export const flowDiagramTemplate: Template = {
   id: 'flow-diagram',
   version: '1.0.0',
+  use: 'any',
+  emphasizeTargets: 'a node id',
   description:
     'Directed graph of labeled nodes and edges, rendered as scalable SVG with staggered entrance. Good for architecture and data flow.',
   slots: {
