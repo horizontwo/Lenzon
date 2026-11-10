@@ -8,6 +8,10 @@
 
 export type Persona = 'corporate' | 'character' | 'friendly' | 'stern';
 
+/**
+ * The sections of a code analysis, which Lenzon's pipeline uses to label
+ * scenes. Listed for autocomplete only. The player never reads a section.
+ */
 export type AnalysisSection =
   | 'quickFacts'
   | 'architecture'
@@ -80,7 +84,12 @@ export interface PrimitiveSpec {
 
 export interface Scene {
   id: string;
-  section: AnalysisSection;
+  /**
+   * A label for which part of the story this scene tells. Optional, and a
+   * free string, because a script need not be about code. The player
+   * ignores it.
+   */
+  section?: AnalysisSection | (string & {});
   primitive: PrimitiveSpec;
   narration: string;
   /** Minimum seconds to hold the scene (actual = max(narrationDuration, holdSeconds)) */
@@ -105,7 +114,8 @@ export interface Scene {
 export interface PresentationScript {
   meta: {
     title: string;
-    repoUrl: string;
+    /** The repository a code explainer is about. Absent for any other subject. */
+    repoUrl?: string;
     generatedAt: string;
     persona: Persona;
     estimatedDuration: number;

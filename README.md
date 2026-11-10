@@ -15,7 +15,7 @@ npm i @lenzon/explainer-format
 
 A script has three parts.
 
-- `meta`: the title, where it came from, and an estimated length in seconds.
+- `meta`: the title, when it was written, and an estimated length in seconds.
 - `defaults`: the palette, the scene transition and the voice.
 - `scenes`: the explainer, in order.
 
@@ -27,16 +27,23 @@ import type { PresentationScript } from '@lenzon/explainer-format';
 
 const scene: PresentationScript['scenes'][number] = {
   id: 'intro',
-  section: 'plainEnglish',
-  narration: 'What this change does, in one sentence.',
+  narration: 'What this idea is, in one sentence.',
   holdSeconds: 5,
   primitive: { template: 'title-bullets', content: { title: 'Intro', bullets: ['One', 'Two'] } },
 };
 ```
 
 `primitive.content` is untyped on purpose. The player checks it against the
-template it names. Each template in `@lenzon/player` documents its own
-slots.
+template it names.
+
+A script need not be about code. `meta.repoUrl` and `scene.section` are
+optional, and only a code explainer uses them.
+
+## Writing one
+
+`@lenzon/player` ships the guides. `WRITING-SCRIPTS.md` covers how to
+write a good script. `TEMPLATES.md` lists every template and its slots.
+Both sit beside the player's README, on npm and in its package folder.
 
 ## Who uses it
 

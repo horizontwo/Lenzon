@@ -1,6 +1,6 @@
 {
   "name": "@lenzon/explainer-format",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "The PresentationScript format: what an explainer producer emits and a player plays.",
   "type": "module",
   "main": "./dist/index.js",
